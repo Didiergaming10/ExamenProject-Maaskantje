@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klanten - Voedselbank Maaskantje</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="container header-container">
+      <div class="header-left">
+        <button id="menuToggle" class="menu-toggle">
+          <i class="bi bi-list"></i>
+        </button>
+        <a href="dashboard.html" class="logo">Voedselbank Maaskantje</a>
+        <nav class="main-nav">
+          <ul id="navLinks">
+            <!-- Navigation links will be populated by JavaScript based on user role -->
+          </ul>
+        </nav>
+      </div>
+      <div class="header-right">
+        <button class="icon-button">
+          <i class="bi bi-search"></i>
+        </button>
+        <div class="user-menu">
+          <button class="icon-button" id="userMenuButton">
+            <i class="bi bi-person"></i>
+          </button>
+          <div class="dropdown-menu" id="userDropdown">
+            <a href="#" class="dropdown-item">Profiel</a>
+            <a href="#" class="dropdown-item" id="logoutButton">Uitloggen</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <div class="page-header">
+      <div>
+        <h1>Klanten</h1>
+        <p class="text-muted">Beheer de klanten van de voedselbank</p>
+      </div>
+      <div class="action-buttons" id="clientActions">
+        <button class="btn btn-primary">
+          <i class="bi bi-plus"></i>
+          Voeg toe
+        </button>
+        <button class="btn btn-outline" id="deleteClientsBtn" disabled>
+          <i class="bi bi-trash"></i>
+          Verwijderen
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-container">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" id="clientSearch" placeholder="Zoeken op naam, email of postcode..." class="search-input">
+      </div>
+      <div class="filter-options">
+        <div class="checkbox-item">
+          <input type="checkbox" id="showInactiveClients">
+          <label for="showInactiveClients">Toon inactieve klanten</label>
+        </div>
+        <div class="select-container">
+          <select id="postalCodeFilter" class="select-input">
+            <option value="all">Alle postcodes</option>
+            <option value="5473AB">5473 AB</option>
+            <option value="5473CD">5473 CD</option>
+            <option value="5473EF">5473 EF</option>
+            <option value="5473GH">5473 GH</option>
+            <option value="5473IJ">5473 IJ</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table" id="clientsTable">
+          <thead>
+            <tr>
+              <th>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="selectAllClients">
+                  <label for="selectAllClients" class="sr-only">Selecteer alle</label>
+                </div>
+              </th>
+              <th>Naam</th>
+              <th>Contact</th>
+              <th>Adres</th>
+              <th>Gezinsgrootte</th>
+              <th>Dieetwensen</th>
+              <th>Status</th>
+              <th>Acties</th>
+            </tr>
+          </thead>
+          <tbody id="clientsList">
+            <!-- Clients will be populated by JavaScript -->
+            <tr>
+              <td colspan="8" class="loading-cell">
+                <div class="loading">
+                  <div class="spinner"></div>
+                  <p>Klanten laden...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Client Modal -->
+  <div class="modal" id="clientModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="clientModalTitle">Klant toevoegen</h2>
+        <button class="close-button" id="closeClientModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="clientForm" class="form-space">
+          <div class="form-group">
+            <label for="clientName">Naam</label>
+            <input type="text" id="clientName" required>
+          </div>
+          <div class="form-group">
+            <label for="clientEmail">Email</label>
+            <input type="email" id="clientEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="clientPhone">Telefoon</label>
+            <input type="tel" id="clientPhone" required>
+          </div>
+          <div class="form-group">
+            <label for="clientAddress">Adres</label>
+            <input type="text" id="clientAddress" required>
+          </div>
+          <div class="form-group">
+            <label for="clientPostalCode">Postcode</label>
+            <input type="text" id="clientPostalCode" required>
+          </div>
+          <div class="form-group">
+            <label for="clientFamilySize">Gezinsgrootte</label>
+            <input type="number" id="clientFamilySize" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>Dieetwensen</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <input type="checkbox" id="dietPork">
+                <label for="dietPork">Geen varkensvlees</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="dietVegetarian">
+                <label for="dietVegetarian">Vegetarisch</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="dietGluten">
+                <label for="dietGluten">Glutenvrij</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="dietLactose">
+                <label for="dietLactose">Lactose-intolerant</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="clientActive" checked>
+              <label for="clientActive">Actief</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="cancelClient">Annuleren</button>
+            <button type="submit" class="btn btn-primary">Opslaan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/clients.js"></script>
+</body>
+</html>
