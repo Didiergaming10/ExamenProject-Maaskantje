@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registreren - Voedselbank Maaskantje</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card register-card">
+      <div class="card-header text-center">
+        <h1 class="card-title">Voedselbank Maaskantje</h1>
+        <p class="card-description">Account aanmaken</p>
+      </div>
+      <div class="card-content">
+        <form id="registerForm" class="form-space">
+          <div class="form-group">
+            <label for="name">Volledige naam</label>
+            <input type="text" id="name" placeholder="Voornaam Achternaam" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="uw@email.nl" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Wachtwoord</label>
+            <div class="password-input">
+              <input type="password" id="password" placeholder="••••••••" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Bevestig wachtwoord</label>
+            <div class="password-input">
+              <input type="password" id="confirmPassword" placeholder="••••••••" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="accountType">Account type</label>
+            <select id="accountType">
+              <option value="klant">Klant</option>
+            </select>
+            <p class="text-xs text-muted">Medewerker accounts worden aangemaakt door de directie</p>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Account aanmaken</button>
+        </form>
+      </div>
+      <div class="card-footer text-center">
+        <div class="text-sm">
+          Al een account? <a href="login.html" class="text-primary">Inloggen</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
