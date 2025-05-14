@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Redirect to login page
       alert("Gezin informatie succesvol opgeslagen. U kunt nu inloggen.")
-      window.location.href = "index.html"
+      window.location.href = "index.php"
     })
   }
 })

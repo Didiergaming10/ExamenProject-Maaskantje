@@ -174,10 +174,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="bg-white p-6 rounded-lg shadow">
                     <h2 class="text-xl font-semibold mb-4">Snelle links</h2>
                     <div class="space-y-4">
-                        <a href="producten.html" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
+                        <a href="producten.php" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
                             Producten beheren
                         </a>
-                        <a href="leveranciers.html" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
+                        <a href="leveranciers.php" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
                             Leveranciers bekijken
                         </a>
                     </div>
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                         5 stuks
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="producten.html" class="text-green-600 hover:text-green-900">Bijwerken</a>
+                                        <a href="producten.php" class="text-green-600 hover:text-green-900">Bijwerken</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                         3 stuks
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="producten.html" class="text-green-600 hover:text-green-900">Bijwerken</a>
+                                        <a href="producten.php" class="text-green-600 hover:text-green-900">Bijwerken</a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -283,10 +283,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="bg-white p-6 rounded-lg shadow">
                     <h2 class="text-xl font-semibold mb-4">Snelle links</h2>
                     <div class="space-y-4">
-                        <a href="producten.html" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
+                        <a href="producten.php" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
                             Producten bekijken
                         </a>
-                        <a href="voedselpakketten.html" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
+                        <a href="voedselpakketten.php" class="block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
                             Voedselpakketten samenstellen
                         </a>
                     </div>
@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="voedselpakketten.html" class="text-green-600 hover:text-green-900">Bekijken</a>
+                                        <a href="voedselpakketten.php" class="text-green-600 hover:text-green-900">Bekijken</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="voedselpakketten.html" class="text-green-600 hover:text-green-900">Bekijken</a>
+                                        <a href="voedselpakketten.php" class="text-green-600 hover:text-green-900">Bekijken</a>
                                     </td>
                                 </tr>
                             </tbody>

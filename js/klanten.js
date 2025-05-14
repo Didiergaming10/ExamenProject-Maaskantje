@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function requireAuth() {
     // Check if the user is authenticated (e.g., token exists in localStorage)
     if (!localStorage.getItem("token")) {
-      window.location.href = "login.html" // Redirect to login page if not authenticated
+      window.location.href = "login.php" // Redirect to login page if not authenticated
     }
   }
 
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Only directie can access this page
   if (user.role !== "directie") {
-    window.location.href = "dashboard.html"
+    window.location.href = "dashboard.php"
   }
 
   // Initialize klanten data in localStorage if not exists
