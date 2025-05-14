@@ -1,123 +1,203 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Producten - Voedselbank Maaskantje</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producten - Voedselbank Maaskantje</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-  <header class="main-header">
-    <div class="container header-container">
-      <div class="header-left">
-        <button id="menuToggle" class="menu-toggle">
-          <i class="bi bi-list"></i>
-        </button>
-        <a href="dashboard.html" class="logo">Voedselbank Maaskantje</a>
-        <nav class="main-nav">
-          <ul id="navLinks">
-            <!-- Navigation links will be populated by JavaScript based on user role -->
-          </ul>
-        </nav>
-      </div>
-      <div class="header-right">
-        <button class="icon-button">
-          <i class="bi bi-search"></i>
-        </button>
-        <div class="user-menu">
-          <button class="icon-button" id="userMenuButton">
-            <i class="bi bi-person"></i>
-          </button>
-          <div class="dropdown-menu" id="userDropdown">
-            <a href="#" class="dropdown-item">Profiel</a>
-            <a href="#" class="dropdown-item" id="logoutButton">Uitloggen</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="container main-content">
-    <div class="page-header">
-      <div>
-        <h1>Producten</h1>
-        <p class="text-muted">Beheer de producten in de voorraad</p>
-      </div>
-      <div class="action-buttons" id="productActions">
-        <!-- Action buttons will be added based on user role -->
-      </div>
-    </div>
-
-    <div class="grid-layout">
-      <!-- Filters sidebar -->
-      <div class="sidebar">
-        <div class="card">
-          <div class="card-content">
-            <div class="filter-section">
-              <label for="search">Zoeken</label>
-              <input type="text" id="search" placeholder="Naam of EAN..." class="search-input">
-            </div>
-
-            <div class="filter-section">
-              <label>Categorieën</label>
-              <div class="checkbox-list" id="categoryFilters">
-                <!-- Categories will be populated by JavaScript -->
-              </div>
-            </div>
-
-            <div class="filter-section">
-              <label>Houdbaar tot</label>
-              <div class="date-inputs">
-                <input type="text" placeholder="DD" class="date-input">
-                <input type="text" placeholder="MM" class="date-input">
-                <input type="text" placeholder="JJJJ" class="date-input">
-              </div>
-            </div>
-
-            <div class="filter-section">
-              <label>Dieetwensen</label>
-              <div class="checkbox-list">
-                <div class="checkbox-item">
-                  <input type="checkbox" id="diet-pork">
-                  <label for="diet-pork">Geen varkensvlees</label>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Voedselbank Maaskantje</h1>
+                <div class="flex items-center">
+                    <div class="relative mr-4">
+                        <input type="text" id="search-products" placeholder="Zoeken..." class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <nav id="main-nav" class="hidden md:flex space-x-4">
+                        <!-- Navigation links will be dynamically inserted based on user role -->
+                    </nav>
+                    <div class="md:hidden">
+                        <button id="mobile-menu-button" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="checkbox-item">
-                  <input type="checkbox" id="diet-vegan">
-                  <label for="diet-vegan">Veganistisch</label>
-                </div>
-                <div class="checkbox-item">
-                  <input type="checkbox" id="diet-vegetarian">
-                  <label for="diet-vegetarian">Vegetarisch</label>
-                </div>
-              </div>
             </div>
-          </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <nav class="flex flex-col space-y-2">
+                    <!-- Mobile navigation links will be dynamically inserted based on user role -->
+                </nav>
+            </div>
         </div>
-      </div>
+    </header>
 
-      <!-- Products list -->
-      <div class="main-panel">
-        <div class="list-header">
-          <button class="btn btn-outline btn-sm">
-            Sorteer
-            <i class="bi bi-arrow-down-up"></i>
-          </button>
-          <div class="text-sm text-muted" id="productCount">0 producten gevonden</div>
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Sidebar for categories -->
+            <div class="w-full md:w-1/4 bg-white p-4 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4">Categorieën</h2>
+                <ul class="space-y-2" id="categories-list">
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="all">Alle producten</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="aardappelen">Aardappelen, groente en fruit</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="kaas">Kaas en vleeswaren</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="zuivel">Zuivel, plantaardig en eieren</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="bakkerij">Bakkerij en banket</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="frisdrank">Frisdrank, sappen, koffie en thee</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="pasta">Pasta, rijst en wereldkeuken</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="soepen">Soepen, sauzen, kruiden en olie</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="snoep">Snoep, koek, chips en chocolade</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="baby">Baby, verzorging en hygiëne</a></li>
+                </ul>
+                
+                <h2 class="text-lg font-semibold mt-6 mb-4">Dieetwensen</h2>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="filter-geen-varkensvlees" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                        <label for="filter-geen-varkensvlees" class="ml-2 block text-sm text-gray-700">geen varkensvlees</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="filter-veganistisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                        <label for="filter-veganistisch" class="ml-2 block text-sm text-gray-700">veganistisch</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="filter-vegetarisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                        <label for="filter-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main content -->
+            <div class="w-full md:w-3/4">
+                <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Producten</h2>
+                        <div class="flex items-center space-x-2">
+                            <label for="sort-by" class="text-sm font-medium text-gray-700">Sorteer:</label>
+                            <select id="sort-by" class="border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                <option value="naam">Naam</option>
+                                <option value="categorie">Categorie</option>
+                                <option value="ean">EAN-nummer</option>
+                                <option value="voorraad">Voorraad</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="product-actions" class="flex flex-wrap gap-2 mb-4">
+                        <button id="add-product" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <i class="fas fa-plus mr-2"></i>Product toevoegen
+                        </button>
+                        <button id="remove-product" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <i class="fas fa-trash mr-2"></i>Verwijderen
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <input type="checkbox" id="select-all-products" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Naam
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Categorie
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        EAN-nummer
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Voorraad
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Acties
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Products will be loaded here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+    </main>
 
-        <div class="product-list" id="productList">
-          <!-- Products will be populated by JavaScript -->
-          <div class="loading">
-            <div class="spinner"></div>
-            <p>Producten laden...</p>
-          </div>
+    <!-- Add/Edit Product Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-title" class="text-xl font-semibold">Product toevoegen</h2>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="product-form" class="space-y-4">
+                <input type="hidden" id="product-id">
+                <div>
+                    <label for="product-naam" class="block text-sm font-medium text-gray-700">Naam</label>
+                    <input type="text" id="product-naam" name="product-naam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label for="product-categorie" class="block text-sm font-medium text-gray-700">Categorie</label>
+                    <select id="product-categorie" name="product-categorie" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="">Selecteer categorie</option>
+                        <option value="aardappelen">Aardappelen, groente en fruit</option>
+                        <option value="kaas">Kaas en vleeswaren</option>
+                        <option value="zuivel">Zuivel, plantaardig en eieren</option>
+                        <option value="bakkerij">Bakkerij en banket</option>
+                        <option value="frisdrank">Frisdrank, sappen, koffie en thee</option>
+                        <option value="pasta">Pasta, rijst en wereldkeuken</option>
+                        <option value="soepen">Soepen, sauzen, kruiden en olie</option>
+                        <option value="snoep">Snoep, koek, chips en chocolade</option>
+                        <option value="baby">Baby, verzorging en hygiëne</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="product-ean" class="block text-sm font-medium text-gray-700">EAN-nummer</label>
+                    <input type="text" id="product-ean" name="product-ean" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label for="product-voorraad" class="block text-sm font-medium text-gray-700">Voorraad</label>
+                    <input type="number" id="product-voorraad" name="product-voorraad" min="0" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Dieetwensen:</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="product-geen-varkensvlees" name="product-dieetwensen" value="geen-varkensvlees" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                            <label for="product-geen-varkensvlees" class="ml-2 block text-sm text-gray-700">geen varkensvlees</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="product-veganistisch" name="product-dieetwensen" value="veganistisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                            <label for="product-veganistisch" class="ml-2 block text-sm text-gray-700">veganistisch</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="product-vegetarisch" name="product-dieetwensen" value="vegetarisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                            <label for="product-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="cancel-product" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Annuleren
+                    </button>
+                    <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Opslaan
+                    </button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </main>
 
-  <script src="js/app.js"></script>
-  <script src="js/products.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/producten.js"></script>
 </body>
 </html>

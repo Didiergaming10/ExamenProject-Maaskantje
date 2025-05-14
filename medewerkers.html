@@ -1,166 +1,160 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medewerkers - Voedselbank Maaskantje</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medewerkers - Voedselbank Maaskantje</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-  <header class="main-header">
-    <div class="container header-container">
-      <div class="header-left">
-        <button id="menuToggle" class="menu-toggle">
-          <i class="bi bi-list"></i>
-        </button>
-        <a href="dashboard.html" class="logo">Voedselbank Maaskantje</a>
-        <nav class="main-nav">
-          <ul id="navLinks">
-            <!-- Navigation links will be populated by JavaScript based on user role -->
-          </ul>
-        </nav>
-      </div>
-      <div class="header-right">
-        <button class="icon-button">
-          <i class="bi bi-search"></i>
-        </button>
-        <div class="user-menu">
-          <button class="icon-button" id="userMenuButton">
-            <i class="bi bi-person"></i>
-          </button>
-          <div class="dropdown-menu" id="userDropdown">
-            <a href="#" class="dropdown-item">Profiel</a>
-            <a href="#" class="dropdown-item" id="logoutButton">Uitloggen</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="container main-content">
-    <div class="page-header">
-      <div>
-        <h1>Medewerkers</h1>
-        <p class="text-muted">Beheer de medewerkers van de voedselbank</p>
-      </div>
-      <div class="action-buttons" id="employeeActions">
-        <button class="btn btn-primary">
-          <i class="bi bi-plus"></i>
-          Voeg toe
-        </button>
-        <button class="btn btn-outline" id="deleteEmployeesBtn" disabled>
-          <i class="bi bi-trash"></i>
-          Verwijderen
-        </button>
-      </div>
-    </div>
-
-    <div class="filter-bar">
-      <div class="search-container">
-        <i class="bi bi-search search-icon"></i>
-        <input type="text" id="employeeSearch" placeholder="Zoeken op naam of email..." class="search-input">
-      </div>
-      <div class="filter-options">
-        <div class="checkbox-item">
-          <input type="checkbox" id="showInactive">
-          <label for="showInactive">Toon inactieve medewerkers</label>
-        </div>
-        <div class="select-container">
-          <select id="roleFilter" class="select-input">
-            <option value="all">Alle rollen</option>
-            <option value="directie">Directie</option>
-            <option value="magazijn">Magazijnmedewerker</option>
-            <option value="vrijwilliger">Vrijwilliger</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="table-container">
-        <table class="data-table" id="employeesTable">
-          <thead>
-            <tr>
-              <th>
-                <div class="checkbox-item">
-                  <input type="checkbox" id="selectAllEmployees">
-                  <label for="selectAllEmployees" class="sr-only">Selecteer alle</label>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Voedselbank Maaskantje</h1>
+                <div class="flex items-center">
+                    <div class="relative mr-4">
+                        <input type="text" id="search-medewerkers" placeholder="Zoeken..." class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <nav id="main-nav" class="hidden md:flex space-x-4">
+                        <!-- Navigation links will be dynamically inserted based on user role -->
+                    </nav>
+                    <div class="md:hidden">
+                        <button id="mobile-menu-button" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
                 </div>
-              </th>
-              <th>Naam</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Status</th>
-              <th>Acties</th>
-            </tr>
-          </thead>
-          <tbody id="employeesList">
-            <!-- Employees will be populated by JavaScript -->
-            <tr>
-              <td colspan="6" class="loading-cell">
-                <div class="loading">
-                  <div class="spinner"></div>
-                  <p>Medewerkers laden...</p>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <nav class="flex flex-col space-y-2">
+                    <!-- Mobile navigation links will be dynamically inserted based on user role -->
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Medewerkers</h2>
+                <div class="flex space-x-2">
+                    <button id="multi-select" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <i class="fas fa-check-square mr-2"></i>Multi select
+                    </button>
+                    <button id="add-medewerker" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <i class="fas fa-plus mr-2"></i>Voeg toe
+                    </button>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-
-  <!-- Employee Modal -->
-  <div class="modal" id="employeeModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modalTitle">Medewerker toevoegen</h2>
-        <button class="close-button" id="closeModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="employeeForm" class="form-space">
-          <div class="form-group">
-            <label for="employeeName">Naam</label>
-            <input type="text" id="employeeName" required>
-          </div>
-          <div class="form-group">
-            <label for="employeeEmail">Email</label>
-            <input type="email" id="employeeEmail" required>
-          </div>
-          <div class="form-group">
-            <label for="employeeRole">Rol</label>
-            <select id="employeeRole" required>
-              <option value="directie">Directie</option>
-              <option value="magazijn">Magazijnmedewerker</option>
-              <option value="vrijwilliger">Vrijwilliger</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="employeePassword">Wachtwoord</label>
-            <div class="password-input">
-              <input type="password" id="employeePassword" required>
-              <button type="button" class="password-toggle" onclick="togglePassword('employeePassword')">
-                <i class="bi bi-eye"></i>
-              </button>
             </div>
-          </div>
-          <div class="form-group">
-            <div class="checkbox-item">
-              <input type="checkbox" id="employeeActive" checked>
-              <label for="employeeActive">Actief</label>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden multi-select-col">
+                                <input type="checkbox" id="select-all-medewerkers" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Naam
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Telefoon
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Rol
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acties
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="medewerkers-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Medewerkers will be loaded here dynamically -->
+                    </tbody>
+                </table>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" id="cancelEmployee">Annuleren</button>
-            <button type="submit" class="btn btn-primary">Opslaan</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+        </div>
+    </main>
 
-  <script src="js/app.js"></script>
-  <script src="js/employees.js"></script>
+    <!-- Add/Edit Medewerker Modal -->
+    <div id="medewerker-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-title" class="text-xl font-semibold">Medewerker toevoegen</h2>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="medewerker-form" class="space-y-4">
+                <input type="hidden" id="medewerker-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="voornaam" class="block text-sm font-medium text-gray-700">Voornaam</label>
+                        <input type="text" id="voornaam" name="voornaam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label for="achternaam" class="block text-sm font-medium text-gray-700">Achternaam</label>
+                        <input type="text" id="achternaam" name="achternaam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div>
+                    <label for="telefoon" class="block text-sm font-medium text-gray-700">Telefoon</label>
+                    <input type="tel" id="telefoon" name="telefoon" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                
+                <div>
+                    <label for="rol" class="block text-sm font-medium text-gray-700">Rol</label>
+                    <select id="rol" name="rol" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="">Selecteer rol</option>
+                        <option value="directie">Directie</option>
+                        <option value="magazijn">Magazijnmedewerker</option>
+                        <option value="vrijwilliger">Vrijwilliger</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="wachtwoord" class="block text-sm font-medium text-gray-700">Wachtwoord</label>
+                    <input type="password" id="wachtwoord" name="wachtwoord" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    <p class="text-xs text-gray-500 mt-1">Laat leeg om het huidige wachtwoord te behouden</p>
+                </div>
+                
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="status" name="status" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="actief">Actief</option>
+                        <option value="geblokkeerd">Geblokkeerd</option>
+                    </select>
+                </div>
+                
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="cancel-medewerker" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Annuleren
+                    </button>
+                    <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Opslaan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/medewerkers.js"></script>
 </body>
 </html>
