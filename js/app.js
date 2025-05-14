@@ -10,6 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (isAuthenticated()) {
     // Redirect to dashboard
-    window.location.href = "dashboard.html"
+    window.location.href = "dashboard.php"
   }
 })

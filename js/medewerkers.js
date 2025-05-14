@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Only directie can access this page
   if (user.role !== "directie") {
-    window.location.href = "dashboard.html"
+    window.location.href = "dashboard.php"
   }
 
   // Load medewerkers

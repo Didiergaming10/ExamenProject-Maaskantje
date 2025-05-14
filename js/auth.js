@@ -67,7 +67,7 @@ function login(email, password) {
 // Function to handle logout
 function logout() {
   localStorage.removeItem("currentUser")
-  window.location.href = "index.html"
+  window.location.href = "index.php"
 }
 
 // Function to create a new user
@@ -168,14 +168,14 @@ function getAllUsers() {
 // Function to redirect if not authenticated
 function requireAuth() {
   if (!isAuthenticated()) {
-    window.location.href = "index.html"
+    window.location.href = "index.php"
   }
 }
 
 // Function to redirect if not authorized for role
 function requireRole(role) {
   if (!isAuthenticated() || !hasRole(role)) {
-    window.location.href = "index.html"
+    window.location.href = "index.php"
   }
 }
 
@@ -199,10 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
           case "directie":
           case "magazijn":
           case "vrijwilliger":
-            window.location.href = "dashboard.html"
+            window.location.href = "dashboard.php"
             break
           default:
-            window.location.href = "dashboard.html"
+            window.location.href = "dashboard.php"
         }
       } else {
         alert(result.message)
@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (createAccountLink) {
       createAccountLink.addEventListener("click", (e) => {
         e.preventDefault()
-        window.location.href = "create-account.html"
+        window.location.href = "create-account.php"
       })
     }
   }
@@ -260,11 +260,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (result.success) {
         if (role === "klant") {
           // Redirect to gezin information page
-          window.location.href = "gezin-informatie.html"
+          window.location.href = "gezin-informatie.php"
         } else {
           // Log in the new user
           login(email, password)
-          window.location.href = "dashboard.html"
+          window.location.href = "dashboard.php"
         }
       } else {
         alert(result.message)
@@ -293,23 +293,23 @@ document.addEventListener("DOMContentLoaded", () => {
     switch (user.role) {
       case "directie":
         navLinks = `
-                    <a href="medewerkers.html" class="text-gray-700 hover:text-green-600">Medewerkers</a>
-                    <a href="producten.html" class="text-gray-700 hover:text-green-600">Producten</a>
-                    <a href="klanten.html" class="text-gray-700 hover:text-green-600">Klanten</a>
-                    <a href="leveranciers.html" class="text-gray-700 hover:text-green-600">Leveranciers</a>
-                    <a href="voedselpakketten.html" class="text-gray-700 hover:text-green-600">Voedselpakketten</a>
+                    <a href="medewerkers.php" class="text-gray-700 hover:text-green-600">Medewerkers</a>
+                    <a href="producten.php" class="text-gray-700 hover:text-green-600">Producten</a>
+                    <a href="klanten.php" class="text-gray-700 hover:text-green-600">Klanten</a>
+                    <a href="leveranciers.php" class="text-gray-700 hover:text-green-600">Leveranciers</a>
+                    <a href="voedselpakketten.php" class="text-gray-700 hover:text-green-600">Voedselpakketten</a>
                 `
         break
       case "magazijn":
         navLinks = `
-                    <a href="producten.html" class="text-gray-700 hover:text-green-600">Producten</a>
-                    <a href="leveranciers.html" class="text-gray-700 hover:text-green-600">Leveranciers</a>
+                    <a href="producten.php" class="text-gray-700 hover:text-green-600">Producten</a>
+                    <a href="leveranciers.php" class="text-gray-700 hover:text-green-600">Leveranciers</a>
                 `
         break
       case "vrijwilliger":
         navLinks = `
-                    <a href="producten.html" class="text-gray-700 hover:text-green-600">Producten</a>
-                    <a href="voedselpakketten.html" class="text-gray-700 hover:text-green-600">Voedselpakketten</a>
+                    <a href="producten.php" class="text-gray-700 hover:text-green-600">Producten</a>
+                    <a href="voedselpakketten.php" class="text-gray-700 hover:text-green-600">Voedselpakketten</a>
                 `
         break
     }
