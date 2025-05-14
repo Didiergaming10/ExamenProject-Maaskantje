@@ -58,7 +58,7 @@
                     </button>
                 </div>
                 <div class="text-center">
-                    <a href="index.html" class="text-sm text-green-600 hover:text-green-500">Terug naar inloggen</a>
+                    <a href="index.php" class="text-sm text-green-600 hover:text-green-500">Terug naar inloggen</a>
                 </div>
             </form>
         </div>
