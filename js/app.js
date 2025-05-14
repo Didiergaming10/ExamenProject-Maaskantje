@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function isAuthenticated() {
     // Replace this with your actual authentication logic
     // For example, check for a token in local storage
-    return localStorage.getItem("token") !== null
+    return localStorage.getItem("currentUser") !== null
   }
 
-  if (isAuthenticated()) {
+  //if (isAuthenticated()) {
     // Redirect to dashboard
-    window.location.href = "dashboard.php"
-  }
+  //  window.location.href = "dashboard.php"
+ // }
 })
