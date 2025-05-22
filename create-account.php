@@ -1,3 +1,68 @@
+<?php
+include 'php/connection.php';
+session_start();
+
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $voornaam = trim($_POST['firstname'] ?? '');
+    $achternaam = trim($_POST['lastname'] ?? '');
+    $naam = $voornaam . ' ' . $achternaam;
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm-password'] ?? '';
+    $role = $_POST['role'] ?? 'admin';
+
+
+    if (empty($voornaam) || empty($achternaam) || empty($email) || empty($password) || empty($confirm_password)) {
+        $errors[] = "Vul alle velden in.";
+    }
+
+    if ($password !== $confirm_password) {
+        $errors[] = "Wachtwoorden komen niet overeen.";
+    }
+ 
+
+    $roleMap = [
+        'admin' => 1,
+        'magazijn' => 2,
+        'vrijwilliger' => 3
+    ];
+
+    if (!isset($roleMap[$role])) {
+        $errors[] = "Ongeldige rol geselecteerd.";
+    }
+
+    if (empty($errors)) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $rollen_idrollen = $roleMap[$role];
+
+        $checkStmt = $conn->prepare("SELECT id FROM gebruikers WHERE email = ?");
+        $checkStmt->bind_param("s", $email);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+
+        if ($checkResult->num_rows > 0) {
+            $errors[] = "Email is al in gebruik.";
+        } else {
+       
+            $stmt = $conn->prepare("INSERT INTO gebruikers (naam, email, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("sssi", $naam, $email, $hashed_password, $rollen_idrollen);
+
+            if ($stmt->execute()) {
+                $_SESSION['success'] = "Account succesvol aangemaakt. Je kunt nu inloggen.";
+                header("Location: create-account.php");
+                exit();
+            } else {
+                $errors[] = "Er is een fout opgetreden bij het aanmaken van het account.";
+            }
+            $stmt->close();
+        }
+        $checkStmt->close();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -12,7 +77,18 @@
         <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
             <h1 class="text-2xl font-bold text-center mb-6">Voedselbank Maaskantje</h1>
             <h2 class="text-xl font-semibold mb-4">Maak account</h2>
-            <form id="create-account-form" class="space-y-4">
+
+            <?php if (!empty($errors)): ?>
+                <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <ul class="list-disc pl-5">
+                        <?php foreach ($errors as $error): ?>
+                            <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <form id="create-account-form" method="POST" action="create-account.php" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label for="firstname" class="block text-sm font-medium text-gray-700">Voornaam</label>
@@ -39,8 +115,8 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Rol</label>
                     <div class="space-y-2">
                         <div class="flex items-center">
-                            <input type="radio" id="role-klant" name="role" value="klant" checked class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
-                            <label for="role-klant" class="ml-2 block text-sm text-gray-700">Klant</label>
+                            <input type="radio" id="role-admin" name="role" value="admin" checked class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
+                            <label for="role-admin" class="ml-2 block text-sm text-gray-700">Admin</label>
                         </div>
                         <div class="flex items-center">
                             <input type="radio" id="role-magazijn" name="role" value="magazijn" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
@@ -57,13 +133,8 @@
                         Maak account
                     </button>
                 </div>
-                <div class="text-center">
-                    <a href="index.html" class="text-sm text-green-600 hover:text-green-500">Terug naar inloggen</a>
-                </div>
             </form>
         </div>
     </div>
-
-    <script src="js/auth.js"></script>
 </body>
 </html>
