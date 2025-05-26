@@ -1,5 +1,4 @@
-<?php
-$servername = "mysql";
+<?php $servername = "mysql";
 $username = "root";
 $password = "password";
 $db = "Eindproject";

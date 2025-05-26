@@ -1,3 +1,6 @@
+<?php
+?>
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -7,6 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="js/producten.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <header class="bg-white shadow">
@@ -43,18 +47,18 @@
                 <h2 class="text-lg font-semibold mb-4">Categorieën</h2>
                 <ul class="space-y-2" id="categories-list">
                     <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="all">Alle producten</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="aardappelen">Aardappelen, groente en fruit</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="kaas">Kaas en vleeswaren</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="zuivel">Zuivel, plantaardig en eieren</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="bakkerij">Bakkerij en banket</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="frisdrank">Frisdrank, sappen, koffie en thee</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="pasta">Pasta, rijst en wereldkeuken</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="soepen">Soepen, sauzen, kruiden en olie</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="snoep">Snoep, koek, chips en chocolade</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="baby">Baby, verzorging en hygiëne</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="aardappelen, groente en fruit">Aardappelen, groente en fruit</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="kaas en vleeswaren">Kaas en vleeswaren</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="zuivel, plantaardig en eieren">Zuivel, plantaardig en eieren</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="bakkerij en banket">Bakkerij en banket</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="frisdrank, sappen, koffie en thee">Frisdrank, sappen, koffie en thee</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="pasta, rijst en wereldkeuken">Pasta, rijst en wereldkeuken</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="soepen, sauzen, kruiden en olie">Soepen, sauzen, kruiden en olie</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="snoep, koek, chips en chocolade">Snoep, koek, chips en chocolade</a></li>
+                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="baby, verzorging en hygiëne">Baby, verzorging en hygiëne</a></li>
                 </ul>
                 
-                <h2 class="text-lg font-semibold mt-6 mb-4">Dieetwensen</h2>
+                <!-- <h2 class="text-lg font-semibold mt-6 mb-4">Dieetwensen</h2>
                 <div class="space-y-2">
                     <div class="flex items-center">
                         <input type="checkbox" id="filter-geen-varkensvlees" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
@@ -68,7 +72,7 @@
                         <input type="checkbox" id="filter-vegetarisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
                         <label for="filter-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
                     </div>
-                </div>
+                </div> -->
             </div>
             
             <!-- Main content -->
@@ -168,7 +172,7 @@
                     <label for="product-voorraad" class="block text-sm font-medium text-gray-700">Voorraad</label>
                     <input type="number" id="product-voorraad" name="product-voorraad" min="0" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                 </div>
-                <div>
+                <!-- <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Dieetwensen:</label>
                     <div class="space-y-2">
                         <div class="flex items-center">
@@ -184,7 +188,7 @@
                             <label for="product-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="flex justify-end space-x-2">
                     <button type="button" id="cancel-product" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Annuleren
@@ -198,6 +202,6 @@
     </div>
 
   <script src="js/auth.js"></script>
-  <script src="js/producten.js"></script>
+
 </body>
 </html>

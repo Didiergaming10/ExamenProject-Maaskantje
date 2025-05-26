@@ -1,29 +1,22 @@
 <?php
-// api/get-products.php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json');
-
-// DB credentials
-$host = 'localhost';
-$user = 'YOUR_DB_USERNAME';
-$pass = 'YOUR_DB_PASSWORD';
-$dbname = 'YOUR_DB_NAME';
-
-$conn = new mysqli($host, $user, $pass, $dbname);
+$conn = include __DIR__ . '/connection.php';
 
 if ($conn->connect_error) {
     http_response_code(500);
-    echo json_encode(["error" => "Database connection failed"]);
+    echo json_encode(["error" => "Database connection failed: " . $conn->connect_error]);
     exit;
 }
 
-$sql = "SELECT id, naam, categorie, ean, voorraad, dieetwensen FROM producten";
+$sql = "SELECT id, naam, categorie, ean, op_voorraad AS voorraad FROM producten";
 $result = $conn->query($sql);
 
 $products = [];
 while ($row = $result->fetch_assoc()) {
-    // Split dieetwensen into array
-    $row['dieetwensen'] = array_map('trim', explode(',', $row['dieetwensen']));
     $products[] = $row;
 }
 
