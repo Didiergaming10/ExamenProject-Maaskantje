@@ -105,8 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const pakketItems = document.getElementById("pakket-items");
     const existingItem = pakketItems.querySelector(`[data-product-id="${product.id}"]`);
     if (existingItem) {
-      const aantalInput = existingItem.querySelector("input");
-      aantalInput.value = Number.parseInt(aantalInput.value) + 1;
+      const aantalInput = existingItem.querySelector("input[type='number']");
+      if (Number(aantalInput.value) < product.voorraad) {
+        aantalInput.value = Number(aantalInput.value) + 1;
+      } else {
+        aantalInput.value = product.voorraad;
+        alert("Niet meer voorraad beschikbaar!");
+      }
     } else {
       const row = document.createElement("tr");
       row.setAttribute("data-product-id", product.id);
@@ -117,8 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
         </td>
         <td class="py-2">
           <button type="button" class="decrement-aantal px-2 py-1 border border-gray-300 rounded-l-md">-</button>
-          <input type="number" value="1" min="1" class="w-12 text-center border-t border-b border-gray-300 mx-1">
+          <input type="number" value="1" min="1" max="${product.voorraad}" class="w-12 text-center border-t border-b border-gray-300 mx-1">
           <button type="button" class="increment-aantal px-2 py-1 border border-gray-300 rounded-r-md">+</button>
+          <span class="ml-2 text-xs text-gray-500">Voorraad: ${product.voorraad}</span>
         </td>
         <td class="py-2">
           <button type="button" class="remove-item text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
@@ -132,7 +138,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (aantalInput.value > 1) aantalInput.value--;
       });
       incrementBtn.addEventListener("click", () => {
-        aantalInput.value++;
+        if (Number(aantalInput.value) < product.voorraad) {
+          aantalInput.value = Number(aantalInput.value) + 1;
+        } else {
+          aantalInput.value = product.voorraad;
+          alert("Niet meer voorraad beschikbaar!");
+        }
+      });
+      aantalInput.addEventListener("input", () => {
+        if (aantalInput.value > product.voorraad) {
+          aantalInput.value = product.voorraad;
+          alert("Niet meer voorraad beschikbaar!");
+        }
+        if (aantalInput.value < 1) {
+          aantalInput.value = 1;
+        }
       });
       removeBtn.addEventListener("click", () => row.remove());
       pakketItems.appendChild(row);

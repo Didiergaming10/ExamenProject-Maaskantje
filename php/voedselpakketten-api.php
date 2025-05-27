@@ -79,6 +79,11 @@ if ($method === 'POST' && $action === 'add') {
         $stmt2 = $conn->prepare("INSERT INTO food_packages_has_products (food_packages_id, products_id, aantal) VALUES (?, ?, ?)");
         $stmt2->bind_param("iii", $pakket_id, $item['product_id'], $item['aantal']);
         $stmt2->execute();
+
+        // Update voorraad for this product
+        $stmt3 = $conn->prepare("UPDATE producten SET op_voorraad = op_voorraad - ? WHERE id = ?");
+        $stmt3->bind_param("ii", $item['aantal'], $item['product_id']);
+        $stmt3->execute();
     }
     echo json_encode(['success' => true]);
     exit;
