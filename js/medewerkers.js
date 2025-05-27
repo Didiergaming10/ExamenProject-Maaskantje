@@ -59,12 +59,15 @@ document.addEventListener("DOMContentLoaded", () => {
   loadMedewerkers()
 
   // Add event listeners
-  const addMedewerkerBtn = document.getElementById("add-medewerker")
-  if (addMedewerkerBtn) {
+ const addMedewerkerBtn = document.getElementById("add-medewerker")
+if (addMedewerkerBtn) {
     addMedewerkerBtn.addEventListener("click", () => {
-      openMedewerkerModal()
+        openMedewerkerModal()
     })
-  }
+}
+
+
+
 
   const multiSelectBtn = document.getElementById("multi-select")
   if (multiSelectBtn) {
