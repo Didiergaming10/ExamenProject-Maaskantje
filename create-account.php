@@ -1,6 +1,8 @@
 <?php
 include 'php/connection.php';
-session_start();
+include 'auth.php';      
+require_role([1]);
+include 'header.php';
 
 $errors = [];
 
@@ -13,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm-password'] ?? '';
     $role = $_POST['role'] ?? 'admin';
 
-
     if (empty($voornaam) || empty($achternaam) || empty($email) || empty($password) || empty($confirm_password)) {
         $errors[] = "Vul alle velden in.";
     }
@@ -21,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirm_password) {
         $errors[] = "Wachtwoorden komen niet overeen.";
     }
- 
 
     $roleMap = [
         'admin' => 1,
@@ -45,13 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($checkResult->num_rows > 0) {
             $errors[] = "Email is al in gebruik.";
         } else {
-       
             $stmt = $conn->prepare("INSERT INTO gebruikers (naam, email, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("sssi", $naam, $email, $hashed_password, $rollen_idrollen);
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = "Account succesvol aangemaakt. Je kunt nu inloggen.";
-                header("Location: create-account.php");
                 exit();
             } else {
                 $errors[] = "Er is een fout opgetreden bij het aanmaken van het account.";

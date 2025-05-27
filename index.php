@@ -1,16 +1,32 @@
 <?php
-include 'php/connection.php'; 
-session_start();
+include 'php/connection.php';
+include 'auth.php';      
+require_role([1]);          
 
+include 'header.php';
 $msg = '';
 
+// Check of gebruiker al ingelogd is
 if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
-    header('Location: dashboard.php');
-    exit();
+    switch ($_SESSION['role']) {
+        case 1:
+            header('Location: dashboard.php');
+            exit;
+        case 2:
+            header('Location: producten.php');
+            exit;
+        case 3:
+            header('Location: voedselpakketten.php');
+            exit;
+        default:
+            header('Location: index.php');
+            exit;
+    }
 }
 
+// Verwerk login formulier
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
     if (!empty($email) && !empty($password)) {
@@ -23,14 +39,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $result->fetch_assoc();
 
             if (password_verify($password, $user['wachtwoord'])) {
+                // Login succesvol, sessie variabelen zetten
                 $_SESSION['valid'] = true;
                 $_SESSION['timeout'] = time();
                 $_SESSION['username'] = $user['naam'];
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = $user['rollen_idrollen'];
 
-                header('Location: dashboard.php');
-                exit();
+                // Redirect op basis van rol
+                switch ($user['rollen_idrollen']) {
+                    case 1:
+                        header('Location: dashboard.php');
+                        exit;
+                    case 2:
+                        header('Location: producten.php');
+                        exit;
+                    case 3:
+                        header('Location: voedselpakketten.php');
+                        exit;
+                    default:
+                        $msg = "Onbekende rol. Neem contact op met de beheerder.";
+                }
             } else {
                 $msg = "Ongeldig wachtwoord.";
             }
@@ -43,6 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="nl">
