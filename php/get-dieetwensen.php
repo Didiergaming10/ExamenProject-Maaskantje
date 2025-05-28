@@ -1,5 +1,4 @@
 <?php
-<?php
 header('Content-Type: application/json');
 $conn = include __DIR__ . '/connection.php';
 $klanten_id = intval($_GET['klanten_id'] ?? 0);
