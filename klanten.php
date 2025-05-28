@@ -1,3 +1,5 @@
+<?php
+?>
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -167,7 +169,6 @@
         </div>
     </div>
 
-    <script src="js/auth.js"></script>
     <script src="js/klanten.js"></script>
 </body>
 </html>

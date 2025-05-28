@@ -1,57 +1,6 @@
 // Klanten management functionality
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Mock authentication functions (replace with your actual authentication logic)
-  function requireAuth() {
-    // Check if the user is authenticated (e.g., token exists in localStorage)
-    if (!localStorage.getItem("token")) {
-      window.location.href = "login.php" // Redirect to login page if not authenticated
-    }
-  }
-
-  function getCurrentUser() {
-    // Retrieve user information from localStorage (assuming it's stored there after login)
-    const user = localStorage.getItem("user")
-    return user ? JSON.parse(user) : { role: "guest" } // Return user object or a default guest user
-  }
-
-  // Require authentication
-  requireAuth()
-
-  // Get current user
-  const user = getCurrentUser()
-
-  // Only directie can access this page
-  if (user.role !== "directie") {
-    window.location.href = "dashboard.php"
-  }
-
-  // Initialize klanten data in localStorage if not exists
-  if (!localStorage.getItem("gezinnen")) {
-    const initialGezinnen = [
-      {
-        id: 1,
-        naam: "Familie Jansen",
-        postcode: "5211AB",
-        email: "jansen@example.com",
-        telefoon: "0612345678",
-        dieetwensen: ["vegetarisch"],
-        allergenen: "Lactose",
-        gezinsleden: ["12/05/2010", "23/09/2015"],
-      },
-      {
-        id: 2,
-        naam: "Familie Pietersen",
-        postcode: "5212CD",
-        email: "pietersen@example.com",
-        telefoon: "0687654321",
-        dieetwensen: ["geen-varkensvlees"],
-        allergenen: "",
-        gezinsleden: ["05/11/2008", "17/03/2012", "30/06/2018"],
-      },
-    ]
-    localStorage.setItem("gezinnen", JSON.stringify(initialGezinnen))
-  }
 
   // Load klanten
   loadKlanten()
@@ -120,63 +69,90 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Functions
   function loadKlanten() {
-    const gezinnen = JSON.parse(localStorage.getItem("gezinnen")) || []
-    const tableBody = document.getElementById("klanten-table-body")
-    const searchTerm = document.getElementById("search-klanten")?.value.toLowerCase() || ""
+    const tableBody = document.getElementById("klanten-table-body");
+    const searchTerm = document.getElementById("search-klanten")?.value.toLowerCase() || "";
 
-    // Filter gezinnen by search term
-    let filteredGezinnen = gezinnen
-    if (searchTerm) {
-      filteredGezinnen = gezinnen.filter(
-        (gezin) =>
-          gezin.naam.toLowerCase().includes(searchTerm) ||
-          gezin.postcode.toLowerCase().includes(searchTerm) ||
-          gezin.email.toLowerCase().includes(searchTerm),
-      )
-    }
+    fetch("php/klanten-api.php")
+      .then((res) => res.json())
+      .then((gezinnen) => {
+        // Filter gezinnen by search term
+        let filteredGezinnen = gezinnen;
+        if (searchTerm) {
+          filteredGezinnen = gezinnen.filter(
+            (gezin) =>
+              gezin.naam.toLowerCase().includes(searchTerm) ||
+              gezin.postcode.toLowerCase().includes(searchTerm) ||
+              gezin.email.toLowerCase().includes(searchTerm)
+          );
+        }
 
-    // Clear table
-    tableBody.innerHTML = ""
+        // Clear table
+        tableBody.innerHTML = "";
 
-    // Add gezinnen to table
-    filteredGezinnen.forEach((gezin) => {
-      const row = document.createElement("tr")
+        // Add gezinnen to table
+        filteredGezinnen.forEach((gezin) => {
+          const row = document.createElement("tr");
 
-      row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap hidden multi-select-col">
-                    <input type="checkbox" class="klant-checkbox focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" data-id="${gezin.id}">
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    ${gezin.naam}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${gezin.postcode}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${gezin.email}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${gezin.telefoon}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${gezin.gezinsleden ? gezin.gezinsleden.length + 1 : 1}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button class="edit-klant text-green-600 hover:text-green-900" data-id="${gezin.id}">Wijzig</button>
-                </td>
-            `
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap hidden multi-select-col">
+                <input type="checkbox" class="klant-checkbox focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" data-id="${gezin.id}">
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                ${gezin.naam}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${gezin.postcode}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${gezin.email}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${gezin.telefoonnummer}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${(gezin.gezinsleden && gezin.gezinsleden.length) ? gezin.gezinsleden.length + 1 : 1}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-2">
+                <button class="edit-klant text-green-600 hover:text-green-900" data-id="${gezin.id}">Wijzig</button>
+                <button class="delete-klant text-red-600 hover:text-red-900" data-id="${gezin.id}">Verwijder</button>
+            </td>
+          `;
 
-      tableBody.appendChild(row)
-    })
+          tableBody.appendChild(row);
+        });
 
-    // Add event listeners to edit buttons
-    const editButtons = document.querySelectorAll(".edit-klant")
-    editButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const klantId = Number.parseInt(button.getAttribute("data-id"))
-        openKlantModal(klantId)
-      })
-    })
+        // Add event listeners to edit buttons
+        const editButtons = document.querySelectorAll(".edit-klant");
+        editButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const klantId = Number.parseInt(button.getAttribute("data-id"));
+            openKlantModal(klantId);
+          });
+        });
+
+        const deleteButtons = document.querySelectorAll(".delete-klant");
+        deleteButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const klantId = Number.parseInt(button.getAttribute("data-id"));
+            if (confirm("Weet je zeker dat je dit gezin wilt verwijderen?")) {
+              fetch("php/delete-klant.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: klantId }),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.success) {
+                    loadKlanten();
+                  } else {
+                    alert(data.error || "Verwijderen mislukt");
+                  }
+                })
+                .catch(() => alert("Verwijderen mislukt"));
+            }
+          });
+        });
+      });
   }
 
   function toggleMultiSelect() {
@@ -201,40 +177,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (klantId) {
       // Edit existing klant
-      modalTitle.textContent = "Klant wijzigen"
+      modalTitle.textContent = "Klant wijzigen";
+      klantIdInput.value = klantId;
 
-      // Get klant data
-      const gezinnen = JSON.parse(localStorage.getItem("gezinnen")) || []
-      const gezin = gezinnen.find((g) => g.id === klantId)
+      fetch("php/klanten-api.php")
+        .then(res => res.json())
+        .then(gezinnen => {
+          const gezin = gezinnen.find(g => g.id == klantId);
+          if (gezin) {
+            document.getElementById("gezin-naam").value = gezin.naam;
+            document.getElementById("postcode").value = gezin.postcode;
+            document.getElementById("email").value = gezin.email;
+            document.getElementById("telefoon").value = gezin.telefoonnummer;
 
-      if (gezin) {
-        // Fill form with klant data
-        klantIdInput.value = gezin.id
-        document.getElementById("gezin-naam").value = gezin.naam
-        document.getElementById("postcode").value = gezin.postcode
-        document.getElementById("email").value = gezin.email
-        document.getElementById("telefoon").value = gezin.telefoon
+            // Set diet checkboxes
+            if (gezin.dieetwensen) {
+              // Bekende dieetwensen
+              const standaardWensen = ["geen-varkensvlees", "veganistisch", "vegetarisch", "allergisch"];
+              document.getElementById("geen-varkensvlees").checked = gezin.dieetwensen.includes("geen-varkensvlees");
+              document.getElementById("veganistisch").checked = gezin.dieetwensen.includes("veganistisch");
+              document.getElementById("vegetarisch").checked = gezin.dieetwensen.includes("vegetarisch");
+              document.getElementById("allergisch").checked = gezin.dieetwensen.includes("allergisch");
 
-        // Set diet checkboxes
-        if (gezin.dieetwensen) {
-          document.getElementById("geen-varkensvlees").checked = gezin.dieetwensen.includes("geen-varkensvlees")
-          document.getElementById("veganistisch").checked = gezin.dieetwensen.includes("veganistisch")
-          document.getElementById("vegetarisch").checked = gezin.dieetwensen.includes("vegetarisch")
-          document.getElementById("allergisch").checked = gezin.dieetwensen.includes("allergisch")
-        }
+              // Filter allergenen (die niet in de standaardlijst staan)
+              const allergenen = gezin.dieetwensen
+                .filter(wens => !standaardWensen.includes(wens))
+                .join(", ");
+              document.getElementById("allergenen").value = allergenen;
+            }
 
-        // Set allergenen
-        if (gezin.allergenen) {
-          document.getElementById("allergenen").value = gezin.allergenen
-        }
-
-        // Add gezinsleden
-        if (gezin.gezinsleden && gezin.gezinsleden.length > 0) {
-          gezin.gezinsleden.forEach((lid) => {
-            addGezinslid(lid)
-          })
-        }
-      }
+            // Add gezinsleden
+            gezinsledenContainer.innerHTML = '<h3 class="text-lg font-medium mb-2">Gezinsleden</h3>';
+            if (gezin.gezinsleden && gezin.gezinsleden.length > 0) {
+              gezin.gezinsleden.forEach(lid => addGezinslid(lid));
+            }
+          }
+        });
     } else {
       // Add new klant
       modalTitle.textContent = "Klant toevoegen"
@@ -297,66 +275,38 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveKlant() {
-    const klantId = document.getElementById("klant-id").value
-    const gezinNaam = document.getElementById("gezin-naam").value
-    const postcode = document.getElementById("postcode").value
-    const email = document.getElementById("email").value
-    const telefoon = document.getElementById("telefoon").value
+    const gezinNaam = document.getElementById("gezin-naam").value;
+    const postcode = document.getElementById("postcode").value;
+    const email = document.getElementById("email").value;
+    const telefoon = document.getElementById("telefoon").value;
 
     // Get dieetwensen
-    const dieetwensen = []
-    if (document.getElementById("geen-varkensvlees").checked) {
-      dieetwensen.push("geen-varkensvlees")
-    }
-    if (document.getElementById("veganistisch").checked) {
-      dieetwensen.push("veganistisch")
-    }
-    if (document.getElementById("vegetarisch").checked) {
-      dieetwensen.push("vegetarisch")
-    }
-    if (document.getElementById("allergisch").checked) {
-      dieetwensen.push("allergisch")
-    }
+    const dieetwensen = [];
+    if (document.getElementById("geen-varkensvlees").checked) dieetwensen.push("geen-varkensvlees");
+    if (document.getElementById("veganistisch").checked) dieetwensen.push("veganistisch");
+    if (document.getElementById("vegetarisch").checked) dieetwensen.push("vegetarisch");
+    if (document.getElementById("allergisch").checked) dieetwensen.push("allergisch");
 
     // Get allergenen
-    const allergenen = document.getElementById("allergenen").value
+    const allergenen = document.getElementById("allergenen").value;
 
     // Get gezinsleden
-    const gezinsleden = []
+    const gezinsleden = [];
     document.querySelectorAll(".gezinslid-item").forEach((item) => {
-      const inputs = item.querySelectorAll("input")
-      const dag = inputs[0].value
-      const maand = inputs[1].value
-      const jaar = inputs[2].value
-
+      const inputs = item.querySelectorAll("input");
+      const dag = inputs[0].value;
+      const maand = inputs[1].value;
+      const jaar = inputs[2].value;
       if (dag && maand && jaar) {
-        gezinsleden.push(`${dag}/${maand}/${jaar}`)
+        // Format as YYYY-MM-DD for MySQL
+        gezinsleden.push(`${jaar}-${maand.padStart(2, '0')}-${dag.padStart(2, '0')}`);
       }
-    })
+    });
 
-    // Get gezinnen from localStorage
-    const gezinnen = JSON.parse(localStorage.getItem("gezinnen")) || []
-
-    if (klantId) {
-      // Update existing klant
-      const index = gezinnen.findIndex((g) => g.id === Number.parseInt(klantId))
-      if (index !== -1) {
-        gezinnen[index] = {
-          ...gezinnen[index],
-          naam: gezinNaam,
-          postcode: postcode,
-          email: email,
-          telefoon: telefoon,
-          dieetwensen: dieetwensen,
-          allergenen: allergenen,
-          gezinsleden: gezinsleden,
-        }
-      }
-    } else {
-      // Add new klant
-      const newId = gezinnen.length > 0 ? Math.max(...gezinnen.map((g) => g.id || 0)) + 1 : 1
-      gezinnen.push({
-        id: newId,
+    fetch("php/save-klant.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         naam: gezinNaam,
         postcode: postcode,
         email: email,
@@ -364,14 +314,17 @@ document.addEventListener("DOMContentLoaded", () => {
         dieetwensen: dieetwensen,
         allergenen: allergenen,
         gezinsleden: gezinsleden,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          closeKlantModal();
+          loadKlanten();
+        } else {
+           alert(data.error || JSON.stringify(data) || "Opslaan mislukt");
+        }
       })
-    }
-
-    // Save to localStorage
-    localStorage.setItem("gezinnen", JSON.stringify(gezinnen))
-
-    // Close modal and reload klanten
-    closeKlantModal()
-    loadKlanten()
+      .catch(() => alert("Opslaan mislukt"));
   }
 })
