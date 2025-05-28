@@ -1,4 +1,9 @@
 <?php
+include 'php/connection.php';
+include 'auth.php';      
+require_role([1]);          
+
+include 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -13,32 +18,6 @@
     <script src="js/producten.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <header class="bg-white shadow">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Voedselbank Maaskantje</h1>
-                <div class="flex items-center">
-                    <div class="relative mr-4">
-                        <input type="text" id="search-products" placeholder="Zoeken..." class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
-                    </div>
-                    <nav id="main-nav" class="hidden md:flex space-x-4">
-                        <!-- Navigation links will be dynamically inserted based on user role -->
-                    </nav>
-                    <div class="md:hidden">
-                        <button id="mobile-menu-button" class="text-gray-500 hover:text-gray-700 focus:outline-none">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div id="mobile-menu" class="hidden md:hidden mt-4">
-                <nav class="flex flex-col space-y-2">
-                    <!-- Mobile navigation links will be dynamically inserted based on user role -->
-                </nav>
-            </div>
-        </div>
-    </header>
 
     <main class="container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row gap-6">
