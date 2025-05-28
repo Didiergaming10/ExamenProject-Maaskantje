@@ -17,7 +17,7 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     $menuItems = [
         1 => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten'],
         2 => ['leveranciers', 'producten'],
-        3 => ['voedselpakketten']
+        3 => ['voedselpakketten','index-vrijwilliger']
     ];
 
     $currentMenu = $menuItems[$role] ?? [];
@@ -26,7 +26,7 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     $homeLinks = [
         1 => 'directie-home.php',
         2 => 'producten.php',
-        3 => 'voedselpakketten.php'
+        3 => 'index-vrijwilliger.php'
     ];
     $homeLink = $homeLinks[$role] ?? '#';
 ?>
@@ -60,15 +60,15 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </form>
             <!-- User Dropdown -->
-            <div class="relative group">
-                <button class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-green-50 transition">
+            <div class="relative" id="user-dropdown-parent">
+                <button id="user-dropdown-btn" type="button" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-green-50 transition focus:outline-none">
                     <i class="fas fa-user-circle text-green-600 text-xl"></i>
                     <span class="hidden sm:inline text-gray-700"><?= htmlspecialchars($username) ?></span>
                     <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                 </button>
-                <div class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition z-50">
+                <div id="user-dropdown-menu" class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg opacity-0 pointer-events-none transition z-50">
                     <div class="px-4 py-2 text-sm text-gray-500 border-b"><?= $roleMenus[$role] ?? '' ?></div>
-                    <a href="logout.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50">Uitloggen</a>
+                    <a href="logout.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Uitloggen</a>
                 </div>
             </div>
             <!-- Mobile menu button -->
@@ -111,6 +111,7 @@ function handleHeaderSearch(event) {
         alert('Pagina niet gevonden.');
     }
 }
+
 document.addEventListener('DOMContentLoaded', function () {
     const menuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -119,10 +120,25 @@ document.addEventListener('DOMContentLoaded', function () {
             mobileMenu.classList.toggle('hidden');
         });
     }
+
+    // User dropdown toggle
+    const userBtn = document.getElementById('user-dropdown-btn');
+    const userMenu = document.getElementById('user-dropdown-menu');
+    document.addEventListener('click', function(e) {
+        if (userBtn && userMenu) {
+            if (userBtn.contains(e.target)) {
+                userMenu.classList.toggle('opacity-0');
+                userMenu.classList.toggle('pointer-events-none');
+            } else if (!userMenu.contains(e.target)) {
+                userMenu.classList.add('opacity-0');
+                userMenu.classList.add('pointer-events-none');
+            }
+        }
+    });
 });
 </script>
 <style>
 a{
     text-decoration: none !important;}
-    </style><
+    </style>
 <?php } // End of if logged in check ?>

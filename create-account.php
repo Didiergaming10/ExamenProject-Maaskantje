@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($checkResult->num_rows > 0) {
             $errors[] = "Email is al in gebruik.";
         } else {
-            $stmt = $conn->prepare("INSERT INTO gebruikers (voornaam, achternaam, email, telefoonnummer, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO gebruikers (voornaam, achternaam, email, telefoon, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssssi", $voornaam, $achternaam, $email, $telefoon, $hashed_password, $rollen_idrollen);
 
             if ($stmt->execute()) {
