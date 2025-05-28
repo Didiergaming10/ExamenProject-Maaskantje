@@ -8,9 +8,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $achternaam = trim($_POST['lastname'] ?? '');
     $naam = $voornaam . ' ' . $achternaam;
     $email = trim($_POST['email'] ?? '');
+    $telefoon = $_POST['telefoon'] ?? '';
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm-password'] ?? '';
     $role = $_POST['role'] ?? 'admin';
+    
 
     if (empty($voornaam) || empty($achternaam) || empty($email) || empty($password) || empty($confirm_password)) {
         $errors[] = "Vul alle velden in.";
@@ -42,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($checkResult->num_rows > 0) {
             $errors[] = "Email is al in gebruik.";
         } else {
-            $stmt = $conn->prepare("INSERT INTO gebruikers (naam, email, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("sssi", $naam, $email, $hashed_password, $rollen_idrollen);
+            $stmt = $conn->prepare("INSERT INTO gebruikers (voornaam, achternaam, email, telefoon, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssi", $voornaam, $achternaam, $email, $telefoon, $hashed_password, $rollen_idrollen);
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = "Account succesvol aangemaakt. Je kunt nu inloggen.";
@@ -127,11 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="flex items-center">
                             <input type="radio" id="role-vrijwilliger" name="role" value="vrijwilliger" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
                             <label for="role-vrijwilliger" class="ml-2 block text-sm text-gray-700">Vrijwilliger</label>
-                        </div>
-
-                        <div class="flex items-center">
-                            <input type="radio" id="role-Admin" name="role" value="Admin" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
-                            <label for="role-Admin" class="ml-2 block text-sm text-gray-700">Admin</label>
                         </div>
                     </div>
                 </div>
