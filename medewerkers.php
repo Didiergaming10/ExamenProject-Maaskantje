@@ -1,5 +1,7 @@
 <?php
+session_start();
 include 'php/connection.php';
+include 'auth.php';
 
 ?>
 
@@ -11,7 +13,7 @@ include 'php/connection.php';
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
-
+<?php include 'header.php'; ?>
     <main class="container mx-auto px-4 py-8">
         <div class="bg-white p-4 rounded-lg shadow mb-6">
             <div class="flex justify-between items-center mb-4">

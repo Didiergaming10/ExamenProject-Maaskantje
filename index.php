@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'php/connection.php';
 
 $msg = '';
@@ -7,7 +8,7 @@ $msg = '';
 if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     switch ($_SESSION['role']) {
         case 1:
-            header('Location: dashboard.php');
+            header('Location: directie-home.php');
             exit;
         case 2:
             header('Location: producten.php');
@@ -27,26 +28,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if (!empty($email) && !empty($password)) {
-        $stmt = $conn->prepare("SELECT id, naam, wachtwoord, rollen_idrollen FROM gebruikers WHERE email = ?");
+        $stmt = $conn->prepare("SELECT id, voornaam, achternaam, wachtwoord, rollen_idrollen FROM gebruikers WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
+            $fullName = $user['voornaam'] . ' ' . $user['achternaam'];
 
             if (password_verify($password, $user['wachtwoord'])) {
                 // Login succesvol, sessie variabelen zetten
                 $_SESSION['valid'] = true;
                 $_SESSION['timeout'] = time();
-                $_SESSION['username'] = $user['naam'];
+                $_SESSION['username'] = $fullName;
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = $user['rollen_idrollen'];
 
                 // Redirect op basis van rol
                 switch ($user['rollen_idrollen']) {
                     case 1:
-                        header('Location: dashboard.php');
+                        header('Location: directie-home.php');
                         exit;
                     case 2:
                         header('Location: producten.php');
@@ -119,9 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Inloggen
                     </button>
-                </div>
-                <div class="text-center">
-                    <a href="#" class="text-sm text-green-600 hover:text-green-500">Wachtwoord vergeten?</a>
                 </div>
             </form>
         </div>

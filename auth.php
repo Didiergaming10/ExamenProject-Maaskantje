@@ -1,16 +1,13 @@
 <?php
+// auth.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($_SESSION['user_id'])) {
+// Redirect to login if not authenticated
+if (!isset($_SESSION['valid']) || $_SESSION['valid'] !== true) {
     header('Location: index.php');
-    exit();
+    exit;
 }
 
-function require_role($allowed_roles) {
-    if (!in_array($_SESSION['role'], $allowed_roles)) {
-        header('Location: index.php'); 
-        exit();
-    }
-}
+?>
