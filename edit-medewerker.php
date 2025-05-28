@@ -3,41 +3,81 @@ $conn = new mysqli("mysql", "root", "password", "Eindproject");
 if ($conn->connect_error) die("Verbinding mislukt: " . $conn->connect_error);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Gegevens updaten
     $id = $_POST['id'];
     $voornaam = $_POST['voornaam'];
     $achternaam = $_POST['achternaam'];
     $email = $_POST['email'];
     $telefoon = $_POST['telefoon'];
-    $rol = $_POST['rol'];
     $status = $_POST['status'];
+    $rol = $_POST['rol'];
 
-    $stmt = $conn->prepare("UPDATE gebruikers SET voornaam=?, achternaam=?, email=?, telefoon=?, rol=?, status=? WHERE id=?");
-    $stmt->bind_param("ssssssi", $voornaam, $achternaam, $email, $telefoon, $rol, $status, $id);
-    
-    if ($stmt->execute()) {
-        header("Location: medewerkers.php");
-        exit();
-    } else {
-        echo "Fout bij bijwerken: " . $stmt->error;
+    // Zoek juiste rollen_idrollen op basis van gekozen rol
+    $kolom = '';
+    if ($rol === 'Admin') {
+        $kolom = 'directie';
+    } elseif ($rol === 'magazijn') {
+        $kolom = 'magazijnmedewerker';
+    } elseif ($rol === 'vrijwilliger') {
+        $kolom = 'vrijwilliger';
     }
 
-    $stmt->close();
+    $rollen_idrollen = null;
+    if ($kolom) {
+        $res = $conn->query("SELECT idrollen FROM rollen WHERE `$kolom` = 1 LIMIT 1");
+        if ($res && $res->num_rows > 0) {
+            $rollen_idrollen = $res->fetch_assoc()['idrollen'];
+        }
+    }
+
+    if ($rollen_idrollen !== null) {
+        $stmt = $conn->prepare("UPDATE gebruikers SET voornaam=?, achternaam=?, email=?, telefoon=?, rollen_idrollen=?, status=? WHERE id=?");
+$stmt->bind_param("ssssisi", $voornaam, $achternaam, $email, $telefoon, $rollen_idrollen, $status, $id);
+
+        if ($stmt->execute()) {
+            header("Location: medewerkers.php");
+            exit();
+        } else {
+            echo "Fout bij bijwerken: " . $stmt->error;
+        }
+
+        $stmt->close();
+    } else {
+        echo "Ongeldige rol.";
+        exit();
+    }
 } else {
-    // Formulier tonen met bestaande data
     if (!isset($_GET['id'])) {
         echo "Geen ID meegegeven.";
         exit;
     }
 
     $id = (int) $_GET['id'];
-    $result = $conn->query("SELECT * FROM gebruikers WHERE id = $id");
+    $result = $conn->query("
+        SELECT 
+            g.*, 
+            r.directie, r.magazijnmedewerker, r.vrijwilliger 
+        FROM gebruikers g 
+        LEFT JOIN rollen r ON g.rollen_idrollen = r.idrollen 
+        WHERE g.id = $id
+    ");
+
     if ($result->num_rows !== 1) {
         echo "Medewerker niet gevonden.";
         exit;
     }
 
     $row = $result->fetch_assoc();
+
+    // Bepaal leesbare rol op basis van 1 in kolommen
+    if ($row['directie'] == 1) {
+        $huidigeRol = 'Admin';
+    } elseif ($row['magazijnmedewerker'] == 1) {
+        $huidigeRol = 'magazijn';
+    } elseif ($row['vrijwilliger'] == 1) {
+        $huidigeRol = 'vrijwilliger';
+    } else {
+        $huidigeRol = '';
+    }
 }
 ?>
 
@@ -69,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <label class="block mb-2 text-sm font-medium">Rol</label>
             <select name="rol" class="w-full mb-4 p-2 border rounded">
-                <option value="vrijwilliger" <?= $row['rol'] === 'vrijwilliger' ? 'selected' : '' ?>>Vrijwilliger</option>
-                <option value="magazijn" <?= $row['rol'] === 'magazijn' ? 'selected' : '' ?>>Magazijn</option>
-                <option value="Admin" <?= $row['rol'] === 'Admin' ? 'selected' : '' ?>>Admin</option>
+                <option value="vrijwilliger" <?= $huidigeRol === 'vrijwilliger' ? 'selected' : '' ?>>Vrijwilliger</option>
+                <option value="magazijn" <?= $huidigeRol === 'magazijn' ? 'selected' : '' ?>>Magazijn</option>
+                <option value="Admin" <?= $huidigeRol === 'Admin' ? 'selected' : '' ?>>Admin</option>
             </select>
 
             <label class="block mb-2 text-sm font-medium">Status</label>

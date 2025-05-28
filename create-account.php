@@ -6,36 +6,47 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $voornaam = trim($_POST['firstname'] ?? '');
     $achternaam = trim($_POST['lastname'] ?? '');
-    $naam = $voornaam . ' ' . $achternaam;
     $email = trim($_POST['email'] ?? '');
     $telefoon = $_POST['telefoon'] ?? '';
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm-password'] ?? '';
-    $role = $_POST['role'] ?? 'admin';
-    
+    $role = $_POST['role'] ?? '';
 
+    // Validaties
     if (empty($voornaam) || empty($achternaam) || empty($email) || empty($password) || empty($confirm_password)) {
-        $errors[] = "Vul alle velden in.";
+        $errors[] = "Vul alle verplichte velden in.";
     }
 
     if ($password !== $confirm_password) {
         $errors[] = "Wachtwoorden komen niet overeen.";
     }
 
-    $roleMap = [
-        'admin' => 1,
-        'magazijn' => 2,
-        'vrijwilliger' => 3
-    ];
-
-    if (!isset($roleMap[$role])) {
+    // Zoek juiste idrollen op basis van kolom met 1
+    $kolom = '';
+    if ($role === 'admin') {
+        $kolom = 'directie';
+    } elseif ($role === 'magazijn') {
+        $kolom = 'magazijnmedewerker';
+    } elseif ($role === 'vrijwilliger') {
+        $kolom = 'vrijwilliger';
+    } else {
         $errors[] = "Ongeldige rol geselecteerd.";
     }
 
     if (empty($errors)) {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $rollen_idrollen = $roleMap[$role];
+        $result = $conn->query("SELECT idrollen FROM rollen WHERE `$kolom` = 1 LIMIT 1");
+        if ($result && $result->num_rows > 0) {
+            $rollen_idrollen = $result->fetch_assoc()['idrollen'];
+        } else {
+            $errors[] = "Rol niet gevonden in de rollen-tabel.";
+        }
+    }
 
+    // Account maken als er geen fouten zijn
+    if (empty($errors)) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // Check of e-mailadres al bestaat
         $checkStmt = $conn->prepare("SELECT id FROM gebruikers WHERE email = ?");
         $checkStmt->bind_param("s", $email);
         $checkStmt->execute();
@@ -44,21 +55,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($checkResult->num_rows > 0) {
             $errors[] = "Email is al in gebruik.";
         } else {
-            $stmt = $conn->prepare("INSERT INTO gebruikers (voornaam, achternaam, email, telefoon, wachtwoord, rollen_idrollen) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssi", $voornaam, $achternaam, $email, $telefoon, $hashed_password, $rollen_idrollen);
+            $stmt = $conn->prepare("INSERT INTO gebruikers (voornaam, achternaam, email, telefoon, wachtwoord, rollen_idrollen, status) VALUES (?, ?, ?, ?, ?, ?, 'actief')");
+$stmt->bind_param("sssssi", $voornaam, $achternaam, $email, $telefoon, $hashed_password, $rollen_idrollen);
 
             if ($stmt->execute()) {
-                $_SESSION['success'] = "Account succesvol aangemaakt. Je kunt nu inloggen.";
+                header("Location: medewerkers.php");
                 exit();
             } else {
-                $errors[] = "Er is een fout opgetreden bij het aanmaken van het account.";
+                $errors[] = "Fout bij opslaan: " . $stmt->error;
             }
             $stmt->close();
         }
         $checkStmt->close();
     }
 }
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="nl">
