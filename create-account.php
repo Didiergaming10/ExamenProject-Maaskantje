@@ -1,23 +1,30 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstname = $_POST['firstname'];
-    $lastname = $_POST['lastname'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure hashing
-    $role = $_POST['role'];
+    $lastname  = $_POST['lastname'];
+    $email     = $_POST['email'];
+    $password  = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $role      = $_POST['role'];
+    $telefoon  = $_POST['telefoon'] ?? '';
+    
+    // Mapping rol naar rollen_idrollen (voorbeeld)
+    $rollenMap = [
+        'magazijn'     => 1,
+        'vrijwilliger' => 2,
+    ];
+    $rollen_idrollen = $rollenMap[$role] ?? 0; // fallback
 
-    // Connect to the database
     $conn = new mysqli("mysql", "root", "password", "Eindproject");
 
     if ($conn->connect_error) {
         die("Verbinding mislukt: " . $conn->connect_error);
     }
 
-    $stmt = $conn->prepare("INSERT INTO medewerkers (voornaam, achternaam, email, wachtwoord, rol, status) VALUES (?, ?, ?, ?, ?, 'actief')");
-    $stmt->bind_param("sssss", $firstname, $lastname, $email, $password, $role);
+    $stmt = $conn->prepare("INSERT INTO gebruikers (voornaam, achternaam, email, wachtwoord, telefoon, rol, status, rollen_idrollen)
+                            VALUES (?, ?, ?, ?, ?, ?, 'actief', ?)");
+    $stmt->bind_param("ssssssi", $firstname, $lastname, $email, $password, $telefoon, $role, $rollen_idrollen);
 
     if ($stmt->execute()) {
-        // Redirect to medewerkers.php
         header("Location: medewerkers.php");
         exit();
     } else {
@@ -28,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="nl">
@@ -59,6 +67,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                     <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                 </div>
+
+                <div>
+    <label for="telefoon" class="block text-sm font-medium text-gray-700">Telefoon</label>
+    <input type="text" id="telefoon" name="telefoon" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+</div>
+
+                
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Wachtwoord</label>
                     <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
@@ -78,6 +93,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="flex items-center">
                             <input type="radio" id="role-vrijwilliger" name="role" value="vrijwilliger" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
                             <label for="role-vrijwilliger" class="ml-2 block text-sm text-gray-700">Vrijwilliger</label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="radio" id="role-Admin" name="role" value="Admin" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
+                            <label for="role-Admin" class="ml-2 block text-sm text-gray-700">Admin</label>
                         </div>
                     </div>
                 </div>
