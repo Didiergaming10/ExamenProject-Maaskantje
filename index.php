@@ -1,9 +1,7 @@
 <?php
 include 'php/connection.php';
-include 'auth.php';      
-require_role([1]);          
 
-include 'header.php';
+
 $msg = '';
 
 // Check of gebruiker al ingelogd is
@@ -19,7 +17,7 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
             header('Location: voedselpakketten.php');
             exit;
         default:
-            header('Location: index.php');
+            header('Location: dashboard.php');
             exit;
     }
 }
@@ -73,8 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -122,9 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Inloggen
                     </button>
-                </div>
-                <div class="text-center">
-                    <a href="#" class="text-sm text-green-600 hover:text-green-500">Wachtwoord vergeten?</a>
                 </div>
             </form>
         </div>

@@ -1,8 +1,6 @@
 <?php
 include 'php/connection.php';
-include 'auth.php';
-require_role([1]);
-include 'header.php';
+
 ?>
 
 <!DOCTYPE html>
