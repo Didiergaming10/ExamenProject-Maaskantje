@@ -40,6 +40,7 @@
                 </div>
             </form>
         </div>
+        
     </div>
 
     <script src="js/auth.js"></script>

@@ -40,6 +40,7 @@
         <div id="dashboard-content">
             <!-- Dashboard content will be loaded here based on user role -->
         </div>
+        
     </main>
 
     <script src="js/auth.js"></script>
