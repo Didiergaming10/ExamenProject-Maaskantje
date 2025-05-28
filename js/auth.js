@@ -172,14 +172,14 @@ function requireAuth() {
   }
 }
 
-// Function to redirect if not authorized for role
+Function to redirect if not authorized for role
 function requireRole(role) {
   if (!isAuthenticated() || !hasRole(role)) {
     window.location.href = "index.php"
   }
 }
 
-// Initialize login form if it exists
+Initialize login form if it exists
 document.addEventListener("DOMContentLoaded", () => {
   // Check if login form exists
   const loginForm = document.getElementById("login-form")

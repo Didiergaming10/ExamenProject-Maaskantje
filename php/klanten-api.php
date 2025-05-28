@@ -6,11 +6,6 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 $conn = include __DIR__ . '/connection.php';
 
-if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(["error" => "Database connection failed: " . $conn->connect_error]);
-    exit;
-}
 
 // Fetch all klanten
 $sql = "SELECT id, naam, postcode, email, telefoonnummer FROM klanten";
