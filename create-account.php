@@ -1,3 +1,34 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $firstname = $_POST['firstname'];
+    $lastname = $_POST['lastname'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure hashing
+    $role = $_POST['role'];
+
+    // Connect to the database
+    $conn = new mysqli("mysql", "root", "password", "Eindproject");
+
+    if ($conn->connect_error) {
+        die("Verbinding mislukt: " . $conn->connect_error);
+    }
+
+    $stmt = $conn->prepare("INSERT INTO medewerkers (voornaam, achternaam, email, wachtwoord, rol, status) VALUES (?, ?, ?, ?, ?, 'actief')");
+    $stmt->bind_param("sssss", $firstname, $lastname, $email, $password, $role);
+
+    if ($stmt->execute()) {
+        // Redirect to medewerkers.php
+        header("Location: medewerkers.php");
+        exit();
+    } else {
+        echo "Fout bij opslaan: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -12,7 +43,8 @@
         <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
             <h1 class="text-2xl font-bold text-center mb-6">Voedselbank Maaskantje</h1>
             <h2 class="text-xl font-semibold mb-4">Maak account</h2>
-            <form id="create-account-form" class="space-y-4">
+            <form method="POST" action="create-account.php" id="create-account-form" class="space-y-4">
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label for="firstname" class="block text-sm font-medium text-gray-700">Voornaam</label>
@@ -38,10 +70,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Rol</label>
                     <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="radio" id="role-klant" name="role" value="klant" checked class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
-                            <label for="role-klant" class="ml-2 block text-sm text-gray-700">Klant</label>
-                        </div>
+                        
                         <div class="flex items-center">
                             <input type="radio" id="role-magazijn" name="role" value="magazijn" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300">
                             <label for="role-magazijn" class="ml-2 block text-sm text-gray-700">Magazijn medewerker</label>
@@ -58,12 +87,12 @@
                     </button>
                 </div>
                 <div class="text-center">
-                    <a href="index.html" class="text-sm text-green-600 hover:text-green-500">Terug naar inloggen</a>
+                    <a href="index.php" class="text-sm text-green-600 hover:text-green-500">Terug naar inloggen</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="js/auth.js"></script>
+    
 </body>
 </html>
