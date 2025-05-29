@@ -1,103 +1,124 @@
 <?php
 include 'php/connection.php';
 
+// Insert new leverancier and levering on POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $bedrijfsnaam = $_POST['bedrijfsnaam'];
+    $adres = $_POST['adres'];
+    $voornaam = $_POST['voornaam'];
+    $email = $_POST['email'];
+    $telefoon = $_POST['telefoon'];
+    $datum = $_POST['datum'] ?? null;  // levering datum
+    $volgende_levering = $_POST['volgende_levering'] ?? null;  // volgende levering datum
+
+    // Insert leverancier (without achternaam)
+    $stmt = $conn->prepare("INSERT INTO leveranciers (bedrijfsnaam, adres, name, email, telefoonnummer) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssi", $bedrijfsnaam, $adres, $voornaam, $email, $telefoon);
+    $stmt->execute();
+    $leverancier_id = $stmt->insert_id;
+    $stmt->close();
+
+    // Insert levering if dates are provided
+    if ($leverancier_id && ($datum || $volgende_levering)) {
+        $stmt2 = $conn->prepare("INSERT INTO leveringen (datum, volgende_levering, leveranciers_id) VALUES (?, ?, ?)");
+        $stmt2->bind_param("ssi", $datum, $volgende_levering, $leverancier_id);
+        $stmt2->execute();
+        $stmt2->close();
+    }
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Fetch leveranciers with their earliest volgende_levering and latest datum
+$sql = "SELECT l.*, 
+        (SELECT volgende_levering FROM leveringen WHERE leveranciers_id = l.id ORDER BY volgende_levering ASC LIMIT 1) AS volgende_levering,
+        (SELECT MAX(datum) FROM leveringen WHERE leveranciers_id = l.id) AS laatste_datum
+        FROM leveranciers l";
+$result = $conn->query($sql);
+$leveranciers = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leveranciers - Voedselbank Maaskantje</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8" />
+    <title>Leveranciers</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 <body class="bg-gray-100 min-h-screen">
-  
+<main class="container mx-auto px-4 py-8">
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+        <h2 class="text-2xl font-bold mb-4">Leveranciers</h2>
 
-    <main class="container mx-auto px-4 py-8">
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Leveranciers</h2>
-                <button id="add-leverancier" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <i class="fas fa-plus mr-2"></i>Toevoegen
-                </button>
-            </div>
-            
-            <div id="leveranciers-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Leveranciers will be loaded here dynamically -->
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php foreach ($leveranciers as $l): ?>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold mb-2"><?= htmlspecialchars($l['bedrijfsnaam'] ?? '') ?></h3>
+                    <p class="text-sm text-gray-500">Adres: <?= htmlspecialchars($l['adres'] ?? '') ?></p>
+                    <p class="text-sm">Contact: <?= htmlspecialchars($l['name'] ?? '') ?></p>
+                    <p class="text-sm">Email: <?= htmlspecialchars($l['email'] ?? '') ?></p>
+                    <p class="text-sm">Telefoon: <?= htmlspecialchars($l['telefoonnummer'] ?? '') ?></p>
+                    <p class="text-sm mt-2 text-blue-600 font-medium">
+                        Laatste levering: <?= $l['laatste_datum'] ? date("d-m-Y", strtotime($l['laatste_datum'])) : 'Geen' ?>
+                    </p>
+                    <p class="text-sm mt-1 text-green-600 font-medium">
+                        Volgende levering: <?= $l['volgende_levering'] ? date("d-m-Y", strtotime($l['volgende_levering'])) : 'Geen gepland' ?>
+                    </p>
+                </div>
+            <?php endforeach; ?>
         </div>
-    </main>
+    </div>
 
-    <!-- Add/Edit Leverancier Modal -->
-    <div id="leverancier-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="modal-title" class="text-xl font-semibold">Leverancier toevoegen</h2>
-                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form id="leverancier-form" class="space-y-4">
-                <input type="hidden" id="leverancier-id">
-                <div>
-                    <label for="leverancier-naam" class="block text-sm font-medium text-gray-700">Leverancier naam</label>
-                    <input type="text" id="leverancier-naam" name="leverancier-naam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                </div>
-                <div>
-                    <label for="leverancier-adres" class="block text-sm font-medium text-gray-700">Adres</label>
-                    <input type="text" id="leverancier-adres" name="leverancier-adres" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                </div>
+    <!-- Toevoegen button -->
+    <div class="text-right p-4">
+        <button id="openModal" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Toevoegen
+        </button>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <!-- Modal Content -->
+        <div class="bg-white p-6 rounded-lg shadow max-w-xl w-full relative">
+            <!-- Close Button -->
+            <button id="closeModal" class="absolute top-2 right-2 text-gray-600 hover:text-black text-2xl font-bold">
+                &times;
+            </button>
+            <h2 class="text-xl font-semibold mb-4">Nieuwe leverancier toevoegen</h2>
+            <form method="POST" autocomplete="off" class="space-y-4">
+                <input type="text" name="bedrijfsnaam" required placeholder="Bedrijfsnaam" class="w-full px-3 py-2 border rounded" />
+                <input type="text" name="adres" required placeholder="Adres" class="w-full px-3 py-2 border rounded" />
+                <input type="text" name="voornaam" required placeholder="Contactpersoon" class="w-full px-3 py-2 border rounded" />
+                <input type="email" name="email" required placeholder="Email" class="w-full px-3 py-2 border rounded" />
+                <input type="number" name="telefoon" required placeholder="Telefoonnummer" class="w-full px-3 py-2 border rounded" />
                 
-                <div class="border-t pt-4">
-                    <h3 class="text-md font-medium mb-2">Contact</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="contact-voornaam" class="block text-sm font-medium text-gray-700">Voornaam</label>
-                            <input type="text" id="contact-voornaam" name="contact-voornaam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        </div>
-                        <div>
-                            <label for="contact-achternaam" class="block text-sm font-medium text-gray-700">Achternaam</label>
-                            <input type="text" id="contact-achternaam" name="contact-achternaam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="contact-email" name="contact-email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    </div>
-                    <div class="mt-4">
-                        <label for="contact-telefoon" class="block text-sm font-medium text-gray-700">Telefoonnummer</label>
-                        <input type="tel" id="contact-telefoon" name="contact-telefoon" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    </div>
-                </div>
-                
-                <div class="border-t pt-4">
-                    <h3 class="text-md font-medium mb-2">Volgende levering</h3>
-                    <div>
-                        <label for="levering-datum" class="block text-sm font-medium text-gray-700">Datum</label>
-                        <input type="date" id="levering-datum" name="levering-datum" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    </div>
-                    <div class="mt-4">
-                        <label for="levering-tijd" class="block text-sm font-medium text-gray-700">Tijd</label>
-                        <input type="time" id="levering-tijd" name="levering-tijd" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                    </div>
-                </div>
-                
-                <div class="flex justify-end space-x-2">
-                    <button type="button" id="cancel-leverancier" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        Annuleren
-                    </button>
-                    <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        Opslaan
-                    </button>
+                <label class="block">
+                  <span class="text-gray-700">Datum levering</span>
+                  <input type="date" name="datum" class="mt-1 block w-full border rounded px-3 py-2" />
+                </label>
+                <label class="block">
+                  <span class="text-gray-700">Volgende levering</span>
+                  <input type="date" name="volgende_levering" class="mt-1 block w-full border rounded px-3 py-2" />
+                </label>
+
+                <div class="text-right">
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Opslaan</button>
                 </div>
             </form>
         </div>
     </div>
+</main>
 
-    <script src="js/auth.js"></script>
-    <script src="js/leveranciers.js"></script>
+<!-- Modal Script -->
+<script>
+    const modal = document.getElementById('modal');
+    const openBtn = document.getElementById('openModal');
+    const closeBtn = document.getElementById('closeModal');
+
+    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    window.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
+</script>
 </body>
 </html>
