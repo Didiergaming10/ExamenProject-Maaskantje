@@ -70,6 +70,7 @@ if ($method === 'GET' && !$action) {
 if ($method === 'POST' && ($action === 'save' || !$action)) {
     $data = json_decode(file_get_contents('php://input'), true);
 
+    $klant_id = isset($data['id']) && $data['id'] ? intval($data['id']) : null;
     $naam = $conn->real_escape_string($data['naam'] ?? '');
     $postcode = $conn->real_escape_string($data['postcode'] ?? '');
     $email = $conn->real_escape_string($data['email'] ?? '');
@@ -94,43 +95,59 @@ if ($method === 'POST' && ($action === 'save' || !$action)) {
         exit;
     }
 
-    $sql = "INSERT INTO klanten (naam, postcode, email, telefoonnummer)
-            VALUES ('$naam', '$postcode', '$email', '$telefoon')";
-    if ($conn->query($sql)) {
-        $klant_id = $conn->insert_id;
-
-        // Insert dieetwensen
-        if (!empty($dieetwensen) && is_array($dieetwensen)) {
-            $stmtDieet = $conn->prepare("INSERT INTO dieëtwensen (klanten_id, dieëtwensen) VALUES (?, ?)");
-            foreach ($dieetwensen as $dieet) {
-                $stmtDieet->bind_param('is', $klant_id, $dieet);
-                if (!$stmtDieet->execute()) {
-                    echo json_encode(['error' => 'Dieetwens fout: ' . $stmtDieet->error]);
-                    exit;
-                }
-            }
-            $stmtDieet->close();
+    if ($klant_id) {
+        // UPDATE bestaande klant
+        $sql = "UPDATE klanten SET naam='$naam', postcode='$postcode', email='$email', telefoonnummer='$telefoon' WHERE id=$klant_id";
+        if ($conn->query($sql)) {
+            // Verwijder oude dieetwensen en gezinsleden
+            $conn->query("DELETE FROM dieëtwensen WHERE klanten_id = $klant_id");
+            $conn->query("DELETE FROM gezinsleden WHERE klanten_id = $klant_id");
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Bijwerken mislukt: ' . $conn->error]);
+            exit;
         }
-
-        // Insert gezinsleden
-        if (!empty($gezinsleden) && is_array($gezinsleden)) {
-            $stmtGezin = $conn->prepare("INSERT INTO gezinsleden (geboortedatum, klanten_id) VALUES (?, ?)");
-            foreach ($gezinsleden as $geboortedatum) {
-                $date = date('Y-m-d', strtotime($geboortedatum));
-                $stmtGezin->bind_param('si', $date, $klant_id);
-                if (!$stmtGezin->execute()) {
-                    echo json_encode(['error' => 'Gezinslid fout: ' . $stmtGezin->error]);
-                    exit;
-                }
-            }
-            $stmtGezin->close();
-        }
-
-        echo json_encode(['success' => true, 'id' => $klant_id]);
     } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Opslaan mislukt: ' . $conn->error]);
+        // INSERT nieuwe klant
+        $sql = "INSERT INTO klanten (naam, postcode, email, telefoonnummer)
+                VALUES ('$naam', '$postcode', '$email', '$telefoon')";
+        if ($conn->query($sql)) {
+            $klant_id = $conn->insert_id;
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Opslaan mislukt: ' . $conn->error]);
+            exit;
+        }
     }
+
+    // Insert dieetwensen
+    if (!empty($dieetwensen) && is_array($dieetwensen)) {
+        $stmtDieet = $conn->prepare("INSERT INTO dieëtwensen (klanten_id, dieëtwensen) VALUES (?, ?)");
+        foreach ($dieetwensen as $dieet) {
+            $stmtDieet->bind_param('is', $klant_id, $dieet);
+            if (!$stmtDieet->execute()) {
+                echo json_encode(['error' => 'Dieetwens fout: ' . $stmtDieet->error]);
+                exit;
+            }
+        }
+        $stmtDieet->close();
+    }
+
+    // Insert gezinsleden
+    if (!empty($gezinsleden) && is_array($gezinsleden)) {
+        $stmtGezin = $conn->prepare("INSERT INTO gezinsleden (geboortedatum, klanten_id) VALUES (?, ?)");
+        foreach ($gezinsleden as $geboortedatum) {
+            $date = date('Y-m-d', strtotime($geboortedatum));
+            $stmtGezin->bind_param('si', $date, $klant_id);
+            if (!$stmtGezin->execute()) {
+                echo json_encode(['error' => 'Gezinslid fout: ' . $stmtGezin->error]);
+                exit;
+            }
+        }
+        $stmtGezin->close();
+    }
+
+    echo json_encode(['success' => true, 'id' => $klant_id]);
     exit;
 }
 

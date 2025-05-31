@@ -30,6 +30,14 @@ include 'auth.php';
     <option value="gezin_desc">Gezin (Z-A)</option>
   </select>
 </div>
+<div class="mb-4 flex items-center">
+    <input
+        type="text"
+        id="search-pakketten"
+        placeholder="Zoek op gezin, datum of product..."
+        class="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+    />
+</div>
             <div id="pakketten-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Voedselpakketten will be loaded here dynamically -->
             </div>

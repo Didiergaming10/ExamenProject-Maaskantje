@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${gezin.telefoonnummer}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${(gezin.gezinsleden && gezin.gezinsleden.length) ? gezin.gezinsleden.length + 1 : 1}
+                ${(gezin.gezinsleden && gezin.gezinsleden.length) ? gezin.gezinsleden.length : 0}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-2">
                 <button class="edit-klant text-green-600 hover:text-green-900" data-id="${gezin.id}">Wijzig</button>
@@ -155,12 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  function toggleMultiSelect() {
-    const multiSelectCols = document.querySelectorAll(".multi-select-col")
-    multiSelectCols.forEach((col) => {
-      col.classList.toggle("hidden")
-    })
-  }
+
 
   function openKlantModal(klantId = null) {
     const modal = document.getElementById("klant-modal")
@@ -275,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveKlant() {
+    const klantId = document.getElementById("klant-id").value; 
     const gezinNaam = document.getElementById("gezin-naam").value;
     const postcode = document.getElementById("postcode").value;
     const email = document.getElementById("email").value;
@@ -307,6 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        id: klantId, 
         naam: gezinNaam,
         postcode: postcode,
         email: email,

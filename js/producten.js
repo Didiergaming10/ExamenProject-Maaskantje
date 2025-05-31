@@ -33,7 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (searchTerm) {
           products = products.filter(p =>
             p.naam.toLowerCase().includes(searchTerm) ||
-            p.ean.toLowerCase().includes(searchTerm)
+            p.ean.toLowerCase().includes(searchTerm) ||
+            (p.categorie || "").toLowerCase().includes(searchTerm) ||
+            String(p.voorraad).toLowerCase().includes(searchTerm)
           );
         }
 

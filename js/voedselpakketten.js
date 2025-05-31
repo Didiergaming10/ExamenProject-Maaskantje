@@ -150,21 +150,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderPakkettenWithSort() {
     const sortValue = document.getElementById("sort-pakketten")?.value || "datum_desc";
-    let sorted = [...pakkettenData];
-    if (sortValue === "datum_desc") {
-      sorted.sort((a, b) => b.datum.localeCompare(a.datum));
-    } else if (sortValue === "datum_asc") {
-      sorted.sort((a, b) => a.datum.localeCompare(b.datum));
-    } else if (sortValue === "gezin_asc") {
-      sorted.sort((a, b) => (a.gezinNaam || "").localeCompare(b.gezinNaam || ""));
-    } else if (sortValue === "gezin_desc") {
-      sorted.sort((a, b) => (b.gezinNaam || "").localeCompare(a.gezinNaam || ""));
+    let filtered = [...pakkettenData];
+
+    // Search filter
+    const searchTerm = document.getElementById("search-pakketten")?.value.toLowerCase().trim() || "";
+    if (searchTerm) {
+      filtered = filtered.filter(pakket => {
+        const id = (pakket.id || "").toString().toLowerCase();
+        const gezin = (pakket.gezinNaam || pakket.klanten_id || "").toString().toLowerCase();
+        const datum = (pakket.datum || "").toLowerCase();
+        const producten = (pakket.items || []).map(i => (i.productNaam || "") + " " + (i.aantal || "")).join(" ").toLowerCase();
+        return id.includes(searchTerm) || gezin.includes(searchTerm) || datum.includes(searchTerm) || producten.includes(searchTerm);
+      });
     }
-    renderPakketten(sorted);
+
+    // Sorting (existing code)
+    if (sortValue === "datum_desc") {
+      filtered.sort((a, b) => b.datum.localeCompare(a.datum));
+    } else if (sortValue === "datum_asc") {
+      filtered.sort((a, b) => a.datum.localeCompare(b.datum));
+    } else if (sortValue === "gezin_asc") {
+      filtered.sort((a, b) => (a.gezinNaam || "").localeCompare(b.gezinNaam || ""));
+    } else if (sortValue === "gezin_desc") {
+      filtered.sort((a, b) => (b.gezinNaam || "").localeCompare(a.gezinNaam || ""));
+    }
+    renderPakketten(filtered);
   }
 
   // Listen for sort changes
   document.getElementById("sort-pakketten")?.addEventListener("change", renderPakkettenWithSort);
+  document.getElementById("search-pakketten")?.addEventListener("input", renderPakkettenWithSort);
 
   function renderPakketten(pakketten) {
     const container = document.getElementById("pakketten-container");
