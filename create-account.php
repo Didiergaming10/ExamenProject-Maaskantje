@@ -1,5 +1,7 @@
 <?php
+session_start();
 include 'php/connection.php';
+include 'auth.php';
 
 $errors = [];
 
@@ -83,6 +85,7 @@ $stmt->bind_param("sssssi", $voornaam, $achternaam, $email, $telefoon, $hashed_p
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-100 min-h-screen">
+    <?php include 'header.php'; ?>
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
             <h1 class="text-2xl font-bold text-center mb-6">Voedselbank Maaskantje</h1>

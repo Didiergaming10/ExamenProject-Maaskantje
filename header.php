@@ -1,120 +1,144 @@
 <?php
-$role = $_SESSION['role'] ?? null;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Only display header if user is logged in
+if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
+    $role = isset($_SESSION['role']) ? (int)$_SESSION['role'] : null;
+    $username = $_SESSION['username'] ?? 'Gebruiker';
 
-$roleMenus = [
-    1 => 'Admin',
-    2 => 'Magazijnmedewerker',
-    3 => 'Vrijwilliger'
-];
+    $roleMenus = [
+        1 => 'Admin',
+        2 => 'Magazijnmedewerker',
+        3 => 'Vrijwilliger'
+    ];
 
-$menuItems = [
-    1 => ['dashboard', 'create-account', 'gezin-informatie', 'klanten', 'leveranciers', 'medewerkers', 'producten', 'voedselpakketten'],
-    2 => ['leveranciers',  'producten'],
-    3 => ['voedselpakketten']
-];
+    $menuItems = [
+        1 => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten'],
+        2 => ['leveranciers', 'producten'],
+        3 => ['voedselpakketten','index-vrijwilliger']
+    ];
 
-$currentMenu = $menuItems[$role] ?? [];
+    $currentMenu = $menuItems[$role] ?? [];
+
+    // Add this before the HTML:
+    $homeLinks = [
+        1 => 'directie-home.php',
+        2 => 'producten.php',
+        3 => 'index-vrijwilliger.php'
+    ];
+    $homeLink = $homeLinks[$role] ?? '#';
 ?>
-
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8" />
-    <title>Voedselbank Maaskantje</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
-    <main class="container mx-auto px-4 py-8">
-    <?php if ($role && isset($roleMenus[$role])): ?>
-        <nav class="sticky top-16 z-10 bg-green-600 rounded-md px-4 py-2">
-            <ul class="flex space-x-6">
-                <?php foreach ($currentMenu as $item): ?>
-                    <li>
-                        <a
-                            href="<?= strtolower($item) ?>.php"
-                            class="text-white font-semibold hover:text-green-300 transition"
-                        >
-                            <?= ucfirst($item) ?>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+<header class="bg-white shadow sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <!-- Logo/Title -->
+        <a href="<?= htmlspecialchars($homeLink) ?>" class="flex items-center space-x-3 group hover:opacity-80 transition">
+            <i class="fas fa-seedling text-green-600 text-2xl group-hover:scale-110 transition-transform"></i>
+            <span class="text-2xl font-bold text-green-700 group-hover:text-green-800 transition-colors">Voedselbank Maaskantje</span>
+        </a>
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center space-x-6">
+            <?php foreach ($currentMenu as $item): ?>
+                <a
+                    href="<?= strtolower($item) ?>.php"
+                    class="text-gray-700 hover:text-green-600 transition-colors font-medium px-2 py-1 rounded hover:bg-green-50 hover:underline"
+                >
+                    <?= ucfirst($item) ?>
+                </a>
+            <?php endforeach; ?>
         </nav>
-    <?php endif; ?>
-</main>
-</head>
-<body class="bg-gray-100">
-
-<header class="bg-white shadow">
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Voedselbank Maaskantje</h1>
-            <div class="flex items-center">
-                <div class="relative mr-4">
-                    <input
-                        type="text"
-                        placeholder="Zoeken..."
-                        class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
-                    />
-                    <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
-                </div>
-                <nav id="main-nav" class="hidden md:flex space-x-4">
-                    <?php foreach ($currentMenu as $item): ?>
-                        <a
-                            href="<?= strtolower($item) ?>.php"
-                            class="text-gray-700 hover:text-green-500"
-                        >
-                            <?= ucfirst($item) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </nav>
-                <div class="md:hidden">
-                    <button
-                        id="mobile-menu-button"
-                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
-                    >
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
+        <!-- Search + User -->
+        <div class="flex items-center space-x-4">
+            <form class="relative hidden sm:block" onsubmit="handleHeaderSearch(event)">
+                <input
+                    id="header-search"
+                    type="text"
+                    placeholder="Zoeken..."
+                    class="pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 transition"
+                />
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </form>
+            <!-- User Dropdown -->
+            <div class="relative" id="user-dropdown-parent">
+                <button id="user-dropdown-btn" type="button" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-green-50 transition focus:outline-none">
+                    <i class="fas fa-user-circle text-green-600 text-xl"></i>
+                    <span class="hidden sm:inline text-gray-700"><?= htmlspecialchars($username) ?></span>
+                    <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                </button>
+                <div id="user-dropdown-menu" class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg opacity-0 pointer-events-none transition z-50">
+                    <div class="px-4 py-2 text-sm text-gray-500 border-b"><?= $roleMenus[$role] ?? '' ?></div>
+                    <a href="logout.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Uitloggen</a>
                 </div>
             </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden mt-4">
-            <nav class="flex flex-col space-y-2">
-                <?php foreach ($currentMenu as $item): ?>
-                    <a
-                        href="<?= strtolower($item) ?>.php"
-                        class="text-gray-700 hover:text-green-500"
-                    >
-                        <?= ucfirst($item) ?>
-                    </a>
-                <?php endforeach; ?>
-            </nav>
+            <!-- Mobile menu button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-green-700 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
         </div>
     </div>
+    <!-- Mobile Nav -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
+        <nav class="flex flex-col px-4 py-2 space-y-1">
+            <?php foreach ($currentMenu as $item): ?>
+                <a
+                    href="<?= strtolower($item) ?>.php"
+                    class="text-gray-700 hover:text-green-600 px-2 py-2 rounded hover:bg-green-50 transition hover:underline"
+                >
+                    <?= ucfirst($item) ?>
+                </a>
+            <?php endforeach; ?>
+            <a href="logout.php" class="text-gray-700 hover:text-green-600 px-2 py-2 rounded hover:bg-green-50 transition hover:underline">Uitloggen</a>
+        </nav>
+    </div>
 </header>
-
-<!-- Pagina inhoud -->
-
-
-<!-- JavaScript om het mobiele menu te togglen -->
 <script>
+function handleHeaderSearch(event) {
+    event.preventDefault();
+    const query = document.getElementById('header-search').value.toLowerCase().trim();
+    const pages = {
+        'medewerkers': 'medewerkers.php',
+        'producten': 'producten.php',
+        'klanten': 'klanten.php',
+        'leveranciers': 'leveranciers.php',
+        'voedselpakketten': 'voedselpakketten.php',
+        'account': 'create-account.php',
+        'dashboard': 'dashboard.php'
+    };
+    if (pages[query]) {
+        window.location.href = pages[query];
+    } else {
+        alert('Pagina niet gevonden.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const menuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
+    if(menuButton && mobileMenu) {
+        menuButton.addEventListener('click', function () {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
 
-    menuButton.addEventListener('click', function () {
-        mobileMenu.classList.toggle('hidden');
+    // User dropdown toggle
+    const userBtn = document.getElementById('user-dropdown-btn');
+    const userMenu = document.getElementById('user-dropdown-menu');
+    document.addEventListener('click', function(e) {
+        if (userBtn && userMenu) {
+            if (userBtn.contains(e.target)) {
+                userMenu.classList.toggle('opacity-0');
+                userMenu.classList.toggle('pointer-events-none');
+            } else if (!userMenu.contains(e.target)) {
+                userMenu.classList.add('opacity-0');
+                userMenu.classList.add('pointer-events-none');
+            }
+        }
     });
 });
 </script>
-
-</body>
-</html>
+<style>
+a{
+    text-decoration: none !important;}
+    </style>
+<?php } // End of if logged in check ?>

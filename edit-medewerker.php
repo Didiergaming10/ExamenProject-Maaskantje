@@ -1,4 +1,9 @@
 <?php
+session_start();
+include 'php/connection.php';
+include 'auth.php';
+
+
 $conn = new mysqli("mysql", "root", "password", "Eindproject");
 if ($conn->connect_error) die("Verbinding mislukt: " . $conn->connect_error);
 
@@ -89,6 +94,7 @@ $stmt->bind_param("ssssisi", $voornaam, $achternaam, $email, $telefoon, $rollen_
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
+<?php include 'header.php'; ?>
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4">Bewerk Medewerker</h2>
