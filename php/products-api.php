@@ -6,6 +6,9 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 $conn = include __DIR__ . '/connection.php';
 
+session_start();
+$role = $_SESSION['role'] ?? null;
+
 if ($conn->connect_error) {
     http_response_code(500);
     echo json_encode(["error" => "Database connection failed: " . $conn->connect_error]);
@@ -58,6 +61,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         // Handle delete action
         if (isset($_GET['action']) && $_GET['action'] === 'delete') {
+            // Only allow directie (role 1)
+            if ($role != 1) {
+                http_response_code(403);
+                echo json_encode(['error' => 'Geen toestemming om te verwijderen']);
+                exit;
+            }
             if (!isset($data['ids']) || !is_array($data['ids'])) {
                 http_response_code(400);
                 echo json_encode(['error' => 'Geen IDs opgegeven']);

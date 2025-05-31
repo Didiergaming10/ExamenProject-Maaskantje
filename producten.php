@@ -54,10 +54,12 @@ include 'auth.php';
                         <button id="add-product" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                             <i class="fas fa-plus mr-2"></i>Product toevoegen
                         </button>
-                        <button id="remove-product" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <i class="fas fa-trash mr-2"></i>Verwijderen
-                        </button>
-                    </div>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+    <button id="remove-product" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+        <i class="fas fa-trash mr-2"></i>Verwijderen
+    </button>
+    <?php endif; ?>
+</div>
                     
                     <div class="mb-4 flex items-center">
     <input
