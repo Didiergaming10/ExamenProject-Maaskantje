@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
           button.addEventListener("click", () => {
             const klantId = Number.parseInt(button.getAttribute("data-id"));
             if (confirm("Weet je zeker dat je dit gezin wilt verwijderen?")) {
-              fetch("php/delete-klant.php", {
+              fetch("php/klanten-api.php?action=delete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: klantId }),
@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    fetch("php/save-klant.php", {
+    fetch("php/klanten-api.php?action=save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
           closeKlantModal();
           loadKlanten();
         } else {
-           alert(data.error || JSON.stringify(data) || "Opslaan mislukt");
+          alert(data.error || JSON.stringify(data) || "Opslaan mislukt");
         }
       })
       .catch(() => alert("Opslaan mislukt"));

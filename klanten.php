@@ -21,9 +21,6 @@ include 'auth.php';
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Klanten</h2>
                 <div class="flex space-x-2">
-                    <button id="multi-select" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <i class="fas fa-check-square mr-2"></i>Multi select
-                    </button>
                     <button id="add-klant" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <i class="fas fa-plus mr-2"></i>Voeg toe
                     </button>
