@@ -13,23 +13,20 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = "all";
 
   function loadProducts() {
-    fetch("php/get-products.php")
+    fetch("php/products-api.php")
       .then(res => res.json())
       .then(data => {
         const sortBy = document.getElementById("sort-by")?.value || "naam";
         const searchTerm = document.getElementById("search-products")?.value.toLowerCase() || "";
 
-        // const filters = {
-        //   geenVarkensvlees: document.getElementById("filter-geen-varkensvlees")?.checked,
-        //   veganistisch: document.getElementById("filter-veganistisch")?.checked,
-        //   vegetarisch: document.getElementById("filter-vegetarisch")?.checked
-        // };
 
         let products = data;
 
         // Category filter
         if (currentCategory !== "all") {
-          products = products.filter(p => p.categorie === currentCategory);
+          products = products.filter(p => 
+            (p.categorie || "").toLowerCase() === currentCategory.toLowerCase()
+          );
         }
 
         // Search filter
@@ -39,14 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
             p.ean.toLowerCase().includes(searchTerm)
           );
         }
-
-        // Dieetwensen filters (commented out)
-        // products = products.filter(p => {
-        //   if (filters.geenVarkensvlees && !p.dieetwensen.includes("geen-varkensvlees")) return false;
-        //   if (filters.veganistisch && !p.dieetwensen.includes("veganistisch")) return false;
-        //   if (filters.vegetarisch && !p.dieetwensen.includes("vegetarisch")) return false;
-        //   return true;
-        // });
 
         // Sorting
         products.sort((a, b) => {
@@ -115,16 +104,81 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Category filter
-  document.querySelectorAll("#categories-list a").forEach(link => {
-    link.addEventListener("click", e => {
-      e.preventDefault();
-      document.querySelectorAll("#categories-list a").forEach(l => l.classList.remove("bg-green-100", "text-green-800"));
-      link.classList.add("bg-green-100", "text-green-800");
-      currentCategory = link.dataset.category;
-      loadProducts();
-    });
+  function loadCategories(selected = "all") {
+    fetch("php/products-api.php?categories")
+      .then(res => res.json())
+      .then(categories => {
+        const list = document.getElementById("categories-list");
+        list.innerHTML = "";
+        // Altijd "Alle producten"
+        const allLi = document.createElement("li");
+        allLi.innerHTML = `<a href="#" class="block p-2 hover:bg-gray-100 rounded${selected === "all" ? " bg-green-100 text-green-800" : ""}" data-category="all">Alle producten</a>`;
+        list.appendChild(allLi);
+
+        categories.forEach(cat => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="#" class="block p-2 hover:bg-gray-100 rounded${selected === cat ? " bg-green-100 text-green-800" : ""}" data-category="${cat}">${cat}</a>`;
+          list.appendChild(li);
+        });
+
+        // Herkoppel event listeners
+        document.querySelectorAll("#categories-list a").forEach(link => {
+          link.addEventListener("click", e => {
+            e.preventDefault();
+            document.querySelectorAll("#categories-list a").forEach(l => l.classList.remove("bg-green-100", "text-green-800"));
+            link.classList.add("bg-green-100", "text-green-800");
+            currentCategory = link.dataset.category;
+            loadProducts();
+          });
+        });
+      });
+  }
+
+  // Laad categorieën bij opstarten
+  loadCategories();
+
+  // Na toevoegen van een categorie, herlaad de lijst:
+  document.getElementById("category-form")?.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const naam = document.getElementById("category-naam").value.trim();
+    if (!naam) return;
+
+    fetch("php/products-api.php?addCategory", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ naam })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("category-modal").classList.add("hidden");
+          loadCategories(naam); // selecteer nieuwe categorie
+          // Optioneel: selecteer direct de nieuwe categorie
+          currentCategory = naam;
+          loadProducts();
+          updateCategorySelect();
+        } else {
+          alert("Fout bij toevoegen: " + (data.error || "Onbekende fout"));
+        }
+      });
   });
+
+  // Vul de categorieën in het product-formulier
+  function updateCategorySelect() {
+    fetch("php/products-api.php?categories")
+      .then(res => res.json())
+      .then(categories => {
+        const select = document.getElementById("product-categorie");
+        if (!select) return;
+        select.innerHTML = `<option value="">Selecteer categorie</option>`;
+        categories.forEach(cat => {
+          select.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+      });
+  }
+
+  // Roep deze functie aan bij opstarten en na toevoegen categorie
+  updateCategorySelect();
 
   // Sorting
   document.getElementById("sort-by")?.addEventListener("change", loadProducts);
@@ -162,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ean = document.getElementById("product-ean").value;
     const voorraad = document.getElementById("product-voorraad").value;
 
-    fetch("php/add-product.php", {
+    fetch("php/products-api.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, naam, categorie, ean, voorraad })
@@ -189,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const ids = checked.map(cb => cb.dataset.id);
 
-    fetch("php/delete-products.php", {
+    fetch("php/products-api.php?action=delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids })
@@ -202,6 +256,18 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("Fout bij verwijderen: " + (data.error || "Onbekende fout"));
         }
       });
+  });
+
+  // Nieuwe categorie modal logic
+  document.getElementById("add-category-btn")?.addEventListener("click", () => {
+    document.getElementById("category-form").reset();
+    document.getElementById("category-modal").classList.remove("hidden");
+  });
+  document.getElementById("close-category-modal")?.addEventListener("click", () => {
+    document.getElementById("category-modal").classList.add("hidden");
+  });
+  document.getElementById("cancel-category")?.addEventListener("click", () => {
+    document.getElementById("category-modal").classList.add("hidden");
   });
 
   loadProducts();
