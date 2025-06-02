@@ -15,19 +15,9 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     ];
 
     $menuItems = [
-        1 => [
-            'klanten',
-            'medewerkers',
-            'leveranciers',
-            'producten',
-            'voedselpakketten',
-            ['link' => 'index-vrijwilliger', 'label' => 'Voedselpakket maken']
-        ],
+        1 => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten'],
         2 => ['leveranciers', 'producten'],
-        3 => [
-            'voedselpakketten',
-            ['link' => 'index-vrijwilliger', 'label' => 'Voedselpakket maken']
-        ]
+        3 => ['voedselpakketten','index-vrijwilliger']
     ];
 
     $currentMenu = $menuItems[$role] ?? [];
@@ -50,20 +40,11 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
         <!-- Desktop Nav -->
         <nav class="hidden md:flex items-center space-x-6">
             <?php foreach ($currentMenu as $item): ?>
-                <?php
-                    if (is_array($item)) {
-                        $href = strtolower($item['link']) . '.php';
-                        $label = $item['label'];
-                    } else {
-                        $href = strtolower($item) . '.php';
-                        $label = ucfirst($item);
-                    }
-                ?>
                 <a
-                    href="<?= htmlspecialchars($href) ?>"
+                    href="<?= strtolower($item) ?>.php"
                     class="text-gray-700 hover:text-green-600 transition-colors font-medium px-2 py-1 rounded hover:bg-green-50 hover:underline"
                 >
-                    <?= htmlspecialchars($label) ?>
+                    <?= ucfirst($item) ?>
                 </a>
             <?php endforeach; ?>
         </nav>
@@ -100,20 +81,11 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
         <nav class="flex flex-col px-4 py-2 space-y-1">
             <?php foreach ($currentMenu as $item): ?>
-                <?php
-                    if (is_array($item)) {
-                        $href = strtolower($item['link']) . '.php';
-                        $label = $item['label'];
-                    } else {
-                        $href = strtolower($item) . '.php';
-                        $label = ucfirst($item);
-                    }
-                ?>
                 <a
-                    href="<?= htmlspecialchars($href) ?>"
+                    href="<?= strtolower($item) ?>.php"
                     class="text-gray-700 hover:text-green-600 px-2 py-2 rounded hover:bg-green-50 transition hover:underline"
                 >
-                    <?= htmlspecialchars($label) ?>
+                    <?= ucfirst($item) ?>
                 </a>
             <?php endforeach; ?>
             <a href="logout.php" class="text-gray-700 hover:text-green-600 px-2 py-2 rounded hover:bg-green-50 transition hover:underline">Uitloggen</a>
