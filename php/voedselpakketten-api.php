@@ -7,7 +7,7 @@ $action = $_GET['action'] ?? '';
 
 if ($method === 'GET' && $action === 'list') {
     // Get all pakketten
-    $sql = "SELECT v.id, v.datum, v.klanten_id, k.naam as gezinNaam
+    $sql = "SELECT v.id, v.datum, v.klanten_id, v.datum_uitgifte, k.naam as gezinNaam
             FROM voedselpakket v
             LEFT JOIN klanten k ON v.klanten_id = k.id";
     $result = $conn->query($sql);
@@ -99,6 +99,19 @@ if ($method === 'GET' && $action === 'dieetwensen') {
         }
     }
     echo json_encode(['dieetwensen' => $dieetwensen]);
+    exit;
+}
+
+if ($method === 'POST' && $action === 'opgehaald') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $pakket_id = intval($input['pakket_id']);
+    $datum_uitgifte = $input['datum_uitgifte'];
+    $stmt = $conn->prepare("UPDATE voedselpakket SET datum_uitgifte = ? WHERE id = ?");
+    if ($stmt->execute([$datum_uitgifte, $pakket_id])) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Database update failed']);
+    }
     exit;
 }
 

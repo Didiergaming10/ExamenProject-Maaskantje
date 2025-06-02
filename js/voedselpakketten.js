@@ -183,10 +183,36 @@ document.addEventListener("DOMContentLoaded", () => {
         <ul class="mt-2 mb-2">
           ${pakket.items.map(item => `<li>${item.productNaam} (${item.aantal})</li>`).join("")}
         </ul>
+        ${
+  pakket.datum_uitgifte
+    ? `<p class="text-green-700"><b>Opgehaald op:</b> ${pakket.datum_uitgifte}</p>`
+    : `<button class="opgehaald-btn bg-blue-600 text-white px-3 py-1 rounded" data-pakket-id="${pakket.id}">Opgehaald</button>`
+}
       `;
       container.appendChild(div);
     });
   }
+
+  // Event delegation for "Opgehaald" button
+  document.getElementById("pakketten-container").addEventListener("click", function(e) {
+    if (e.target.classList.contains("opgehaald-btn")) {
+      const pakketId = e.target.getAttribute("data-pakket-id");
+      const today = new Date().toISOString().split("T")[0];
+      fetch("php/voedselpakketten-api.php?action=opgehaald", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pakket_id: pakketId, datum_uitgifte: today })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            loadVoedselpakketten();
+          } else {
+            alert("Fout bij bijwerken: " + (data.error || "Onbekende fout"));
+          }
+        });
+    }
+  });
 
   function closePakketModal() {
     const modal = document.getElementById("pakket-modal");
