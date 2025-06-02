@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!response.success) {
           throw new Error(response.error || "Onbekende fout");
         }
-        renderProducts(response.data); // <-- Use .data here!
+        renderProducts(response.data); 
       })
       .catch(err => {
         console.error("Gezinnen info ophalen mislukt:", err);

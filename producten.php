@@ -24,33 +24,14 @@ include 'auth.php';
             <div class="w-full md:w-1/4 bg-white p-4 rounded-lg shadow">
                 <h2 class="text-lg font-semibold mb-4">Categorieën</h2>
                 <ul class="space-y-2" id="categories-list">
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="all">Alle producten</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="aardappelen, groente en fruit">Aardappelen, groente en fruit</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="kaas en vleeswaren">Kaas en vleeswaren</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="zuivel, plantaardig en eieren">Zuivel, plantaardig en eieren</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="bakkerij en banket">Bakkerij en banket</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="frisdrank, sappen, koffie en thee">Frisdrank, sappen, koffie en thee</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="pasta, rijst en wereldkeuken">Pasta, rijst en wereldkeuken</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="soepen, sauzen, kruiden en olie">Soepen, sauzen, kruiden en olie</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="snoep, koek, chips en chocolade">Snoep, koek, chips en chocolade</a></li>
-                    <li><a href="#" class="block p-2 hover:bg-gray-100 rounded" data-category="baby, verzorging en hygiëne">Baby, verzorging en hygiëne</a></li>
+                    <!-- Dynamisch geladen -->
                 </ul>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+    <button id="add-category-btn" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <i class="fas fa-plus mr-2"></i>Nieuwe categorie
+    </button>
+<?php endif; ?>
                 
-                <!-- <h2 class="text-lg font-semibold mt-6 mb-4">Dieetwensen</h2>
-                <div class="space-y-2">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="filter-geen-varkensvlees" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                        <label for="filter-geen-varkensvlees" class="ml-2 block text-sm text-gray-700">geen varkensvlees</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="filter-veganistisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                        <label for="filter-veganistisch" class="ml-2 block text-sm text-gray-700">veganistisch</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="filter-vegetarisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                        <label for="filter-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
-                    </div>
-                </div> -->
             </div>
             
             <!-- Main content -->
@@ -73,10 +54,21 @@ include 'auth.php';
                         <button id="add-product" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                             <i class="fas fa-plus mr-2"></i>Product toevoegen
                         </button>
-                        <button id="remove-product" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <i class="fas fa-trash mr-2"></i>Verwijderen
-                        </button>
-                    </div>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+    <button id="remove-product" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+        <i class="fas fa-trash mr-2"></i>Verwijderen
+    </button>
+    <?php endif; ?>
+</div>
+                    
+                    <div class="mb-4 flex items-center">
+    <input
+        type="text"
+        id="search-products"
+        placeholder="Zoek op naam, categorie, EAN of voorraad..."
+        class="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+    />
+</div>
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -178,6 +170,32 @@ include 'auth.php';
             </form>
         </div>
     </div>
+
+    <!-- Nieuwe categorie Modal -->
+    <div id="category-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Nieuwe categorie toevoegen</h2>
+            <button id="close-category-modal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="category-form" class="space-y-4">
+            <div>
+                <label for="category-naam" class="block text-sm font-medium text-gray-700">Categorienaam</label>
+                <input type="text" id="category-naam" name="category-naam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" id="cancel-category" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuleren
+                </button>
+                <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Toevoegen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
   <script src="js/auth.js"></script>
 

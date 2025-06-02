@@ -8,7 +8,7 @@ try {
             k.id,
             k.naam,
             k.postcode,
-            COUNT(gl.idgezinsleden) as aantal_leden
+            COUNT(CASE WHEN gl.geboortedatum IS NOT NULL AND gl.geboortedatum <> '' THEN 1 END) as aantal_leden
         FROM klanten k
         LEFT JOIN gezinsleden gl ON gl.klanten_id = k.id
         GROUP BY k.id, k.naam, k.postcode
