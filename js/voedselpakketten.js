@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <h3 class="font-bold mb-2">Pakket #${pakket.id}</h3>
         <p><b>Gezin:</b> ${pakket.gezinNaam || pakket.klanten_id}</p>
         <p><b>Datum:</b> ${pakket.datum}</p>
-        <ul class="mt-2 mb-2">
+w        <ul class="mt-2 mb-2">
           ${pakket.items.map(item => `<li>${item.productNaam} (${item.aantal})</li>`).join("")}
         </ul>
         ${
