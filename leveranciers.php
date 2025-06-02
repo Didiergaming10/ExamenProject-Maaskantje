@@ -7,12 +7,12 @@ include 'php/connection.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['form_type']) && $_POST['form_type'] === 'leverancier') {
     $id = $_POST["id"] ?? null;
     if (!empty($id)) {
-        $stmt = $conn->prepare("UPDATE leveranciers SET bedrijfsnaam = ?, adres = ?, voornaam = ?, achternaam = ?, email = ?, telefoonnummer = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE leveranciers SET bedrijfsnaam = ?, postcode = ?, voornaam = ?, achternaam = ?, email = ?, telefoonnummer = ? WHERE id = ?");
         $stmt->bind_param("ssssssi", $_POST["bedrijfsnaam"], $_POST["adres"], $_POST["voornaam"], $_POST["achternaam"], $_POST["email"], $_POST["telefoonnummer"], $id);
         $stmt->execute();
         $stmt->close();
     } else {
-        $stmt = $conn->prepare("INSERT INTO leveranciers (bedrijfsnaam, adres, voornaam, achternaam, email, telefoonnummer) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO leveranciers (bedrijfsnaam, postcode, voornaam, achternaam, email, telefoonnummer) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssi", $_POST["bedrijfsnaam"], $_POST["adres"], $_POST["voornaam"], $_POST["achternaam"], $_POST["email"], $_POST["telefoonnummer"]);
         $stmt->execute();
         $stmt->close();
@@ -103,7 +103,7 @@ while ($row = $leveringenResult->fetch_assoc()) {
             <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300">
                 <div>
                     <h3 class="text-2xl font-semibold text-gray-900 mb-3"><?= htmlspecialchars($l['bedrijfsnaam']) ?></h3>
-                    <p class="text-gray-700 mb-1"><strong>Adres:</strong> <?= htmlspecialchars($l['adres']) ?></p>
+                    <p class="text-gray-700 mb-1"><strong>Postcode:</strong> <?= htmlspecialchars($l['postcode']) ?></p>
                     <p class="text-gray-700 mb-1"><strong>Contactpersoon:</strong> <?= htmlspecialchars($l['voornaam'] . ' ' . $l['achternaam']) ?></p>
                     <p class="text-gray-700 mb-1"><strong>Email:</strong> <a href="mailto:<?= htmlspecialchars($l['email']) ?>" class="text-green-600 hover:underline"><?= htmlspecialchars($l['email']) ?></a></p>
                     <p class="text-gray-700 mb-4"><strong>Telefoon:</strong> <?= htmlspecialchars($l['telefoonnummer']) ?></p>
