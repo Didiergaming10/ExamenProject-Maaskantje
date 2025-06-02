@@ -20,19 +20,17 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
         3 => ['voedselpakketten', 'index-vrijwilliger']
     ];
 
-    // Add this mapping for display names:
     $menuDisplayNames = [
         'index-vrijwilliger' => 'Voedselpakket maken',
-        // fallback: ucfirst($item) for others
-    ];
+        ];
 
     $currentMenu = $menuItems[$role] ?? [];
 
     // Add this before the HTML:
     $homeLinks = [
-        1 => 'directie-home.php',
-        2 => 'producten.php',
-        3 => 'index-vrijwilliger.php'
+        1 => '/directie-home.php',
+        2 => '/producten.php',
+        3 => '/index-vrijwilliger.php'
     ];
     $homeLink = $homeLinks[$role] ?? '#';
 ?>
@@ -47,7 +45,7 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
         <nav class="hidden md:flex items-center space-x-6">
             <?php foreach ($currentMenu as $item): ?>
                 <a
-                    href="<?= strtolower($item) ?>.php"
+                    href="/<?= strtolower($item) ?>.php"
                     class="text-gray-700 hover:text-green-600 transition-colors font-medium px-2 py-1 rounded hover:bg-green-50 hover:underline"
                 >
                     <?= $menuDisplayNames[$item] ?? ucfirst($item) ?>
@@ -74,8 +72,8 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
                 </button>
                 <div id="user-dropdown-menu" class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg opacity-0 pointer-events-none transition z-50">
                     <div class="px-4 py-2 text-sm text-gray-500 border-b"><?= $roleMenus[$role] ?? '' ?></div>
-                    <a href="php/change-password.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Wachtwoord wijzigen</a>
-                    <a href="logout.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Uitloggen</a>
+                    <a href="/php/change-password.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Wachtwoord wijzigen</a>
+                    <a href="/logout.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Uitloggen</a>
                 </div>
             </div>
 
