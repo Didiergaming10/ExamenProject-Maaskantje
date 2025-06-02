@@ -15,9 +15,15 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     ];
 
     $menuItems = [
-        1 => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten'],
+        1 => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten', 'index-vrijwilliger'],
         2 => ['leveranciers', 'producten'],
-        3 => ['voedselpakketten','index-vrijwilliger']
+        3 => ['voedselpakketten', 'index-vrijwilliger']
+    ];
+
+    // Add this mapping for display names:
+    $menuDisplayNames = [
+        'index-vrijwilliger' => 'Voedselpakket maken',
+        // fallback: ucfirst($item) for others
     ];
 
     $currentMenu = $menuItems[$role] ?? [];
@@ -44,7 +50,7 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
                     href="<?= strtolower($item) ?>.php"
                     class="text-gray-700 hover:text-green-600 transition-colors font-medium px-2 py-1 rounded hover:bg-green-50 hover:underline"
                 >
-                    <?= ucfirst($item) ?>
+                    <?= $menuDisplayNames[$item] ?? ucfirst($item) ?>
                 </a>
             <?php endforeach; ?>
         </nav>
@@ -68,29 +74,13 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
                 </button>
                 <div id="user-dropdown-menu" class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg opacity-0 pointer-events-none transition z-50">
                     <div class="px-4 py-2 text-sm text-gray-500 border-b"><?= $roleMenus[$role] ?? '' ?></div>
+                    <a href="php/change-password.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Wachtwoord wijzigen</a>
                     <a href="logout.php" class="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:underline">Uitloggen</a>
                 </div>
             </div>
-            <!-- Mobile menu button -->
-            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-green-700 focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
+
         </div>
-    </div>
-    <!-- Mobile Nav -->
-    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
-        <nav class="flex flex-col px-4 py-2 space-y-1">
-            <?php foreach ($currentMenu as $item): ?>
-                <a
-                    href="<?= strtolower($item) ?>.php"
-                    class="text-gray-700 hover:text-green-600 px-2 py-2 rounded hover:bg-green-50 transition hover:underline"
-                >
-                    <?= ucfirst($item) ?>
-                </a>
-            <?php endforeach; ?>
-            <a href="logout.php" class="text-gray-700 hover:text-green-600 px-2 py-2 rounded hover:bg-green-50 transition hover:underline">Uitloggen</a>
-        </nav>
-    </div>
+    </div>   
 </header>
 <script>
 function handleHeaderSearch(event) {
@@ -113,13 +103,6 @@ function handleHeaderSearch(event) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const menuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if(menuButton && mobileMenu) {
-        menuButton.addEventListener('click', function () {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
 
     // User dropdown toggle
     const userBtn = document.getElementById('user-dropdown-btn');
