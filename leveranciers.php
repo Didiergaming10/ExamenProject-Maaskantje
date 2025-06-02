@@ -8,12 +8,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['form_type']) && $_POST
     $id = $_POST["id"] ?? null;
     if (!empty($id)) {
         $stmt = $conn->prepare("UPDATE leveranciers SET bedrijfsnaam = ?, postcode = ?, voornaam = ?, achternaam = ?, email = ?, telefoonnummer = ? WHERE id = ?");
-        $stmt->bind_param("ssssssi", $_POST["bedrijfsnaam"], $_POST["adres"], $_POST["voornaam"], $_POST["achternaam"], $_POST["email"], $_POST["telefoonnummer"], $id);
+        $stmt->bind_param("ssssssi", $_POST["bedrijfsnaam"], $_POST["postcode"], $_POST["voornaam"], $_POST["achternaam"], $_POST["email"], $_POST["telefoonnummer"], $id);
         $stmt->execute();
         $stmt->close();
     } else {
         $stmt = $conn->prepare("INSERT INTO leveranciers (bedrijfsnaam, postcode, voornaam, achternaam, email, telefoonnummer) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssi", $_POST["bedrijfsnaam"], $_POST["adres"], $_POST["voornaam"], $_POST["achternaam"], $_POST["email"], $_POST["telefoonnummer"]);
+        $stmt->bind_param("sssssi", $_POST["bedrijfsnaam"], $_POST["postcode"], $_POST["voornaam"], $_POST["achternaam"], $_POST["email"], $_POST["telefoonnummer"]);
         $stmt->execute();
         $stmt->close();
     }
@@ -178,8 +178,8 @@ while ($row = $leveringenResult->fetch_assoc()) {
                     <input type="text" name="bedrijfsnaam" id="bedrijfsnaam" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
                 </div>
                 <div>
-                    <label for="adres" class="block text-sm font-medium text-gray-700">Adres</label>
-                    <input type="text" name="adres" id="adres" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
+                    <label for="postcode" class="block text-sm font-medium text-gray-700">Postcode</label>
+                    <input type="text" name="postcode" id="postcode" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
                 </div>
             </div>
 
@@ -285,7 +285,7 @@ while ($row = $leveringenResult->fetch_assoc()) {
         document.getElementById('modal-title').innerText = 'Leverancier bewerken';
         document.getElementById('leverancier-id').value = leverancier.id;
         document.getElementById('bedrijfsnaam').value = leverancier.bedrijfsnaam;
-        document.getElementById('adres').value = leverancier.adres;
+        document.getElementById('postcode').value = leverancier.postcode;
         document.getElementById('voornaam').value = leverancier.voornaam;
         document.getElementById('achternaam').value = leverancier.achternaam;
         document.getElementById('email').value = leverancier.email;
