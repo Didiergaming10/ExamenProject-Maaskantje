@@ -42,7 +42,7 @@ function createChart(chartData, type){
     data: {
       labels: chartData.map(row => row.naam),
       datasets: [{
-        label: '# amount',
+        label: '# Aantal',
         backgroundColor:['rgb(34, 158, 86)'],
         borderColor:['rgb(0, 0, 0)'],
         data: chartData.map(row => row.op_voorraad),
