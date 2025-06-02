@@ -60,7 +60,7 @@ include 'auth.php';
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="producten-charts.js"></script>
+    <script src="js/producten-charts.js"></script>
 
   </body>
 
