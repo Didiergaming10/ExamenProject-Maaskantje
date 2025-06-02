@@ -17,11 +17,5 @@ while ($row = $res->fetch_assoc()) {
     array_push($data, $row);
 }
 echo json_encode($data);
-//$i = 0;
-//while ($row = $res->fetch_assoc()) {
-   // $data[$i] = $row;
- //   $i++;
-//}
-//echo rtrim(ltrim(json_encode($data),"["),"]");
-//echo json_encode($data);
+
 ?>
