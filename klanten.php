@@ -7,60 +7,43 @@ include 'auth.php';
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klanten - Voedselbank Maaskantje</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Klanten - Voedselbank Maaskantje</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-100 min-h-screen">
 <?php include 'header.php'; ?>
-    <main class="container mx-auto px-4 py-8">
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Klanten</h2>
-                <div class="flex space-x-2">
-                    <button id="add-klant" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <i class="fas fa-plus mr-2"></i>Voeg toe
-                    </button>
-                </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden multi-select-col">
-                                <input type="checkbox" id="select-all-klanten" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Naam gezin
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Postcode
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Telefoon
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Aantal leden
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Acties
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="klanten-table-body" class="bg-white divide-y divide-gray-200">
-                        <!-- Klanten will be loaded here dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+
+<main class="container mx-auto px-4 py-8">
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Klanten</h2>
+      <button id="add-klant" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+        Voeg toe
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th data-sort="naam" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">Naam gezin</th>
+            <th data-sort="postcode" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">Postcode</th>
+            <th data-sort="email" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">Email</th>
+            <th data-sort="telefoonnummer" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">Telefoon</th>
+            <th data-sort="aantal" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">Aantal leden</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acties</th>
+          </tr>
+        </thead>
+        <tbody id="klanten-table-body" class="bg-white divide-y divide-gray-200">
+          <!-- Klanten komen hier via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
 
     <!-- View/Edit Klant Modal -->
     <div id="klant-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">

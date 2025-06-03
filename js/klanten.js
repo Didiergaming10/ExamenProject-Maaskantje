@@ -2,6 +2,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  let currentSortColumn = "naam";
+let currentSortDirection = "asc";
+
   // Load klanten
   loadKlanten()
 
@@ -67,6 +70,21 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Sorteerbare kolommen aanklikbaar maken
+document.querySelectorAll("th[data-sort]").forEach((th) => {
+  th.addEventListener("click", () => {
+    const sortKey = th.getAttribute("data-sort");
+    if (currentSortColumn === sortKey) {
+      currentSortDirection = currentSortDirection === "asc" ? "desc" : "asc";
+    } else {
+      currentSortColumn = sortKey;
+      currentSortDirection = "asc";
+    }
+    loadKlanten();
+  });
+});
+
+
   // Functions
   function loadKlanten() {
     const tableBody = document.getElementById("klanten-table-body");
@@ -85,6 +103,15 @@ document.addEventListener("DOMContentLoaded", () => {
               gezin.email.toLowerCase().includes(searchTerm)
           );
         }
+
+        // Sorteren op gekozen kolom
+filteredGezinnen.sort((a, b) => {
+  let valueA = a[currentSortColumn]?.toLowerCase?.() || "";
+  let valueB = b[currentSortColumn]?.toLowerCase?.() || "";
+  if (valueA < valueB) return currentSortDirection === "asc" ? -1 : 1;
+  if (valueA > valueB) return currentSortDirection === "asc" ? 1 : -1;
+  return 0;
+});
 
         // Clear table
         tableBody.innerHTML = "";
