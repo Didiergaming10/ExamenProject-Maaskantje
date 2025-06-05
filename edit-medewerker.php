@@ -16,6 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'];
     $rol = $_POST['rol'];
 
+    // Telefoon max 10 tekens
+    if (strlen($telefoon) > 10) {
+        echo "Telefoonnummer mag maximaal 10 tekens bevatten.";
+        exit();
+    }
+
     // Zoek juiste rollen_idrollen op basis van gekozen rol
     $kolom = '';
     if ($rol === 'Admin') {
@@ -111,7 +117,7 @@ $stmt->bind_param("ssssisi", $voornaam, $achternaam, $email, $telefoon, $rollen_
             <input type="email" name="email" value="<?= htmlspecialchars($row['email']) ?>" required class="w-full mb-4 p-2 border rounded">
 
             <label class="block mb-2 text-sm font-medium">Telefoon</label>
-            <input type="text" name="telefoon" value="<?= htmlspecialchars($row['telefoon']) ?>" class="w-full mb-4 p-2 border rounded">
+            <input type="text" name="telefoon" value="<?= htmlspecialchars($row['telefoon']) ?>" maxlength="10" class="w-full mb-4 p-2 border rounded">
 
             <label class="block mb-2 text-sm font-medium">Rol</label>
             <select name="rol" class="w-full mb-4 p-2 border rounded">

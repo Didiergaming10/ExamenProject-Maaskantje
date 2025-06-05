@@ -331,6 +331,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value;
     const telefoon = document.getElementById("telefoon").value;
 
+    // Phone number length check
+    if (telefoon.length > 10) {
+        alert("Telefoonnummer mag maximaal 10 cijfers bevatten.");
+        return;
+    }
+
     // Get dieetwensen
     const dieetwensen = [];
     if (document.getElementById("geen-varkensvlees").checked) dieetwensen.push("geen-varkensvlees");
