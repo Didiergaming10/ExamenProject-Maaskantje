@@ -6,10 +6,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 if ($method === 'GET' && $action === 'list') {
-    // Get all pakketten
+    // Get all pakketten for active klanten only
     $sql = "SELECT v.id, v.datum, v.klanten_id, v.datum_uitgifte, k.naam as gezinNaam
             FROM voedselpakket v
-            LEFT JOIN klanten k ON v.klanten_id = k.id";
+            LEFT JOIN klanten k ON v.klanten_id = k.id
+            WHERE k.actief = 1";
     $result = $conn->query($sql);
     $pakketten = [];
     while ($row = $result->fetch_assoc()) {
@@ -37,8 +38,8 @@ if ($method === 'GET' && $action === 'items') {
 }
 
 if ($method === 'GET' && $action === 'gezinnen') {
-    // Get all families
-    $result = $conn->query("SELECT id, naam FROM klanten");
+    // Get all active families
+    $result = $conn->query("SELECT id, naam FROM klanten WHERE actief = 1");
     $gezinnen = [];
     while ($row = $result->fetch_assoc()) {
         $gezinnen[] = $row;

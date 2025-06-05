@@ -21,6 +21,11 @@ include 'auth.php';
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Klanten</h2>
                 <div class="flex space-x-2">
+                <label class="flex items-center space-x-1">
+                        <input type="checkbox" id="show-inactive" class="h-4 w-4 text-green-600 border-gray-300 rounded">
+                        <span class="text-sm text-gray-700">Toon gedeactiveerden</span>
+                    </label>
+                    <input type="text" id="klanten-filter" placeholder="Zoek op naam, postcode, email..." class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
                     <button id="add-klant" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <i class="fas fa-plus mr-2"></i>Voeg toe
                     </button>
@@ -34,19 +39,19 @@ include 'auth.php';
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden multi-select-col">
                                 <input type="checkbox" id="select-all-klanten" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" data-sort="naam">
                                 Naam gezin
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" data-sort="postcode">
                                 Postcode
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" data-sort="email">
                                 Email
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" data-sort="telefoonnummer">
                                 Telefoon
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" data-sort="aantal">
                                 Aantal leden
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

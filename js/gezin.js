@@ -13,24 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = "all";
 
   function loadGezinnen() {
-    fetch("php/gezin-info.php")
+    fetch("php/klanten-api.php")
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          return res.text().then(text => {
-            throw new Error(`Expected JSON but got: ${text.substring(0, 100)}...`);
-          });
-        }
         return res.json();
       })
-      .then(response => {
-        if (!response.success) {
-          throw new Error(response.error || "Onbekende fout");
-        }
-        renderProducts(response.data); 
+      .then(gezinnen => {
+        renderProducts(gezinnen);
       })
       .catch(err => {
         console.error("Gezinnen info ophalen mislukt:", err);
@@ -62,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
             row.innerHTML = `
                 <td class="px-6 py-4">${p.naam}</td>
                 <td class="px-6 py-4">${p.postcode || ""}</td>
-                <td class="px-6 py-4">${p.aantal_leden || 0} leden</td>
+                <td class="px-6 py-4">${p.gezinsleden ? p.gezinsleden.length : 0} leden</td>
                 <td class="px-6 py-4">
                     ${
                         !openPakket
