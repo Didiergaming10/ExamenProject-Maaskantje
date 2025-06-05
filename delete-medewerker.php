@@ -1,29 +1,25 @@
 <?php
+session_start();
+include 'php/connection.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-    $id = intval($_POST['id']);
+    $id = (int)$_POST['id'];
 
-    // Databaseverbinding
-    $conn = new mysqli("mysql", "root", "password", "Eindproject");
-
-    if ($conn->connect_error) {
-        die("Verbinding mislukt: " . $conn->connect_error);
-    }
-
-    // Verwijder de gebruiker met het opgegeven ID
+    // Verwijder medewerker uit database
     $stmt = $conn->prepare("DELETE FROM gebruikers WHERE id = ?");
     $stmt->bind_param("i", $id);
+    $stmt->execute();
 
-    if ($stmt->execute()) {
-        // Na verwijderen terug naar medewerkersoverzicht
-        header("Location: medewerkers.php");
+    // Check of de verwijderde gebruiker de huidige gebruiker is
+    if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id) {
+        session_unset();
+        session_destroy();
+        header("Location: login.php");
         exit();
-    } else {
-        echo "Fout bij verwijderen: " . $stmt->error;
     }
 
-    $stmt->close();
-    $conn->close();
-} else {
-    echo "Ongeldig verzoek.";
+    // Anders terug naar medewerkerslijst
+    header("Location: medewerkers.php");
+    exit();
 }
 ?>
