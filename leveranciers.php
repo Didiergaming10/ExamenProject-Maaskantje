@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'auth.php';
 include 'php/connection.php';
+include 'auth.php';
 
 // Handle POST (Add or Update leverancier)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['form_type']) && $_POST['form_type'] === 'leverancier') {
