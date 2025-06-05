@@ -107,7 +107,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Stuur naar API
             const resp = await fetch('php/medewerker-api.php', { method: 'POST', body: formData });
-            const result = await resp.json();
+            const text = await resp.text();
+            console.log(text);
+            const result = JSON.parse(text);
             if (result.success) {
                 window.location.reload();
             } else {

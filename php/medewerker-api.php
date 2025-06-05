@@ -1,7 +1,16 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include 'connection.php';
-include '../auth.php';
+
+if (!isset($_SESSION['valid']) || $_SESSION['valid'] !== true || !isset($_SESSION['user_id'])) {
+    header('Content-Type: application/json');
+    http_response_code(401);
+    echo json_encode(['error' => 'Niet ingelogd']);
+    exit;
+}
+
 
 header('Content-Type: application/json');
 
