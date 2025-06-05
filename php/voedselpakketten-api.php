@@ -49,9 +49,24 @@ if ($method === 'GET' && $action === 'gezinnen') {
 }
 
 if ($method === 'GET' && $action === 'producten') {
-    // Search products by name or EAN
     $q = $conn->real_escape_string($_GET['q'] ?? '');
-    $result = $conn->query("SELECT id, naam, ean, categorie, op_voorraad AS voorraad FROM producten WHERE naam LIKE '%$q%' OR ean LIKE '%$q%' LIMIT 20");
+    $categorie = $conn->real_escape_string($_GET['categorie'] ?? '');
+    $voorraad = $_GET['voorraad'] ?? '';
+
+    $where = [];
+    if ($q !== '') {
+        $where[] = "(naam LIKE '%$q%' OR ean LIKE '%$q%')";
+    }
+    if ($categorie !== '') {
+        $where[] = "categorie = '$categorie'";
+    }
+    if ($voorraad === 'op_voorraad') {
+        $where[] = "op_voorraad > 0";
+    } elseif ($voorraad === 'niet_op_voorraad') {
+        $where[] = "op_voorraad <= 0";
+    }
+    $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    $result = $conn->query("SELECT id, naam, ean, categorie, op_voorraad AS voorraad FROM producten $whereSql LIMIT 50");
     $producten = [];
     while ($row = $result->fetch_assoc()) {
         $producten[] = $row;

@@ -44,8 +44,17 @@ include 'auth.php';
             </div>
             <!-- Producten grid -->
             <div class="w-full md:w-2/3 flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <input type="text" id="product-search" placeholder="Zoek producten..." class="px-4 py-2 border border-gray-300 rounded-md w-full max-w-xs">
+                <div class="flex flex-col sm:flex-row sm:items-end sm:gap-4 mb-4">
+                    <input type="text" id="product-search" placeholder="Zoek producten..." class="px-4 py-2 border border-gray-300 rounded-md w-full max-w-xs mb-2 sm:mb-0">
+                    <select id="filter-categorie" class="px-4 py-2 border border-gray-300 rounded-md w-full sm:w-auto mb-2 sm:mb-0">
+                        <option value="">Alle categorieën</option>
+                        <!-- Dynamisch vullen met categorieën via JS -->
+                    </select>
+                    <select id="filter-voorraad" class="px-4 py-2 border border-gray-300 rounded-md w-full sm:w-auto">
+                        <option value="">Alle voorraad</option>
+                        <option value="op_voorraad">Op voorraad</option>
+                        <option value="niet_op_voorraad">Niet op voorraad</option>
+                    </select>
                 </div>
                 <div id="product-search-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <!-- Product cards will be loaded here dynamically -->

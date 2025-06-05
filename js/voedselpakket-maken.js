@@ -67,17 +67,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load all products initially
-  function loadProducts(q = "") {
-    fetch("php/voedselpakketten-api.php?action=producten&q=" + encodeURIComponent(q))
+  // --- FILTERS: Dynamisch vullen en toepassen ---
+  const filterCategorie = document.getElementById("filter-categorie");
+  const filterVoorraad = document.getElementById("filter-voorraad");
+  const productSearch = document.getElementById("product-search");
+
+  // Vul categorieën dynamisch
+  function loadCategories() {
+    fetch("php/products-api.php?categories")
+      .then(res => res.json())
+      .then(categories => {
+        filterCategorie.innerHTML = `<option value="">Alle categorieën</option>`;
+        categories.forEach(cat => {
+          filterCategorie.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+        // Laad producten pas als de categorieën geladen zijn!
+        loadProducts();
+      });
+  }
+  loadCategories();
+
+  // Producten laden met filters
+  function loadProducts() {
+    const q = productSearch.value.trim();
+    const categorie = filterCategorie.value;
+    const voorraad = filterVoorraad.value;
+
+    const params = new URLSearchParams({
+      action: "producten",
+      q,
+      categorie,
+      voorraad
+    });
+
+    fetch("php/voedselpakketten-api.php?" + params.toString())
       .then(res => res.json())
       .then(products => showProductSearchResults(products));
   }
-  loadProducts();
 
-  document.getElementById("product-search").addEventListener("input", e => {
-    loadProducts(e.target.value);
-  });
+  // Event listeners voor filters
+  productSearch.addEventListener("input", loadProducts);
+  filterCategorie.addEventListener("change", loadProducts);
+  filterVoorraad.addEventListener("change", loadProducts);
 
   function showProductSearchResults(products) {
     const resultsContainer = document.getElementById("product-search-results");
