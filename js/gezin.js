@@ -43,10 +43,24 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("php/voedselpakketten-api.php?action=list")
       .then(res => res.json())
       .then(pakketten => {
+        // Split gezinnen into two groups
+        const zonderOpenPakket = [];
+        const metOpenPakket = [];
+
         products.forEach(p => {
-            // Find pakketten for this gezin
             const gezinPakketten = pakketten.filter(pk => pk.klanten_id == p.id);
-            // Check if there is any pakket without datum_uitgifte
+            const openPakket = gezinPakketten.some(pk => !pk.datum_uitgifte);
+
+            if (!openPakket) {
+                zonderOpenPakket.push({ ...p, gezinPakketten });
+            } else {
+                metOpenPakket.push({ ...p, gezinPakketten });
+            }
+        });
+
+        // First render those without open pakket
+        [...zonderOpenPakket, ...metOpenPakket].forEach(p => {
+            const gezinPakketten = p.gezinPakketten;
             const openPakket = gezinPakketten.some(pk => !pk.datum_uitgifte);
 
             const row = document.createElement("tr");
