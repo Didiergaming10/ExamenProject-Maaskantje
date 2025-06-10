@@ -13,24 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = "all";
 
   function loadGezinnen() {
-    fetch("php/gezin-info.php")
+    fetch("php/klanten-api.php")
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          return res.text().then(text => {
-            throw new Error(`Expected JSON but got: ${text.substring(0, 100)}...`);
-          });
-        }
         return res.json();
       })
-      .then(response => {
-        if (!response.success) {
-          throw new Error(response.error || "Onbekende fout");
-        }
-        renderProducts(response.data); 
+      .then(gezinnen => {
+        renderProducts(gezinnen);
       })
       .catch(err => {
         console.error("Gezinnen info ophalen mislukt:", err);
@@ -52,17 +43,31 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("php/voedselpakketten-api.php?action=list")
       .then(res => res.json())
       .then(pakketten => {
+        // Split gezinnen into two groups
+        const zonderOpenPakket = [];
+        const metOpenPakket = [];
+
         products.forEach(p => {
-            // Find pakketten for this gezin
             const gezinPakketten = pakketten.filter(pk => pk.klanten_id == p.id);
-            // Check if there is any pakket without datum_uitgifte
+            const openPakket = gezinPakketten.some(pk => !pk.datum_uitgifte);
+
+            if (!openPakket) {
+                zonderOpenPakket.push({ ...p, gezinPakketten });
+            } else {
+                metOpenPakket.push({ ...p, gezinPakketten });
+            }
+        });
+
+        // First render those without open pakket
+        [...zonderOpenPakket, ...metOpenPakket].forEach(p => {
+            const gezinPakketten = p.gezinPakketten;
             const openPakket = gezinPakketten.some(pk => !pk.datum_uitgifte);
 
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td class="px-6 py-4">${p.naam}</td>
                 <td class="px-6 py-4">${p.postcode || ""}</td>
-                <td class="px-6 py-4">${p.aantal_leden || 0} leden</td>
+                <td class="px-6 py-4">${p.gezinsleden ? p.gezinsleden.length : 0} leden</td>
                 <td class="px-6 py-4">
                     ${
                         !openPakket

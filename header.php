@@ -53,17 +53,9 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
             <?php endforeach; ?>
         </nav>
         <!-- Search + User -->
-   <!--     <div class="flex items-center space-x-4">
-            <form class="relative hidden sm:block" onsubmit="handleHeaderSearch(event)">
-                <input
-                    id="header-search"
-                    type="text"
-                    placeholder="Zoeken..."
-                    class="pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 transition"
-                />
-                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </form> 
-            <!-- User Dropdown -->
+        <div class="flex items-center space-x-4">
+            
+        <!-- User Dropdown -->
             <div class="relative" id="user-dropdown-parent">
                 <button id="user-dropdown-btn" type="button" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-green-50 transition focus:outline-none">
                     <i class="fas fa-user-circle text-green-600 text-xl"></i>

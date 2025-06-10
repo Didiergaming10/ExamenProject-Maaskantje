@@ -68,91 +68,146 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Functions
+  let currentSort = { key: null, asc: true };
+  let allGezinnen = [];
+
   function loadKlanten() {
     const tableBody = document.getElementById("klanten-table-body");
-    const searchTerm = document.getElementById("search-klanten")?.value.toLowerCase() || "";
+    const searchTerm = document.getElementById("klanten-filter")?.value.toLowerCase() || "";
+    const showInactive = document.getElementById("show-inactive")?.checked;
 
-    fetch("php/klanten-api.php")
-      .then((res) => res.json())
-      .then((gezinnen) => {
-        // Filter gezinnen by search term
-        let filteredGezinnen = gezinnen;
-        if (searchTerm) {
-          filteredGezinnen = gezinnen.filter(
-            (gezin) =>
-              gezin.naam.toLowerCase().includes(searchTerm) ||
-              gezin.postcode.toLowerCase().includes(searchTerm) ||
-              gezin.email.toLowerCase().includes(searchTerm)
-          );
-        }
+    fetch("php/klanten-api.php" + (showInactive ? "?all=1" : ""))
+        .then((res) => res.json())
+        .then((gezinnen) => {
+            allGezinnen = gezinnen;
 
-        // Clear table
-        tableBody.innerHTML = "";
-
-        // Add gezinnen to table
-        filteredGezinnen.forEach((gezin) => {
-          const row = document.createElement("tr");
-
-          row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap hidden multi-select-col">
-                <input type="checkbox" class="klant-checkbox focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" data-id="${gezin.id}">
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                ${gezin.naam}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${gezin.postcode}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${gezin.email}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${gezin.telefoonnummer}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${(gezin.gezinsleden && gezin.gezinsleden.length) ? gezin.gezinsleden.length : 0}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-2">
-                <button class="edit-klant text-green-600 hover:text-green-900" data-id="${gezin.id}">Wijzig</button>
-                <button class="delete-klant text-red-600 hover:text-red-900" data-id="${gezin.id}">Verwijder</button>
-            </td>
-          `;
-
-          tableBody.appendChild(row);
-        });
-
-        // Add event listeners to edit buttons
-        const editButtons = document.querySelectorAll(".edit-klant");
-        editButtons.forEach((button) => {
-          button.addEventListener("click", () => {
-            const klantId = Number.parseInt(button.getAttribute("data-id"));
-            openKlantModal(klantId);
-          });
-        });
-
-        const deleteButtons = document.querySelectorAll(".delete-klant");
-        deleteButtons.forEach((button) => {
-          button.addEventListener("click", () => {
-            const klantId = Number.parseInt(button.getAttribute("data-id"));
-            if (confirm("Weet je zeker dat je dit gezin wilt verwijderen?")) {
-              fetch("php/klanten-api.php?action=delete", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: klantId }),
-              })
-                .then((res) => res.json())
-                .then((data) => {
-                  if (data.success) {
-                    loadKlanten();
-                  } else {
-                    alert(data.error || "Verwijderen mislukt");
-                  }
-                })
-                .catch(() => alert("Verwijderen mislukt"));
+            // Filter gezinnen by search term
+            let filteredGezinnen = gezinnen;
+            if (searchTerm) {
+                filteredGezinnen = gezinnen.filter(
+                    (gezin) =>
+                        gezin.naam.toLowerCase().includes(searchTerm) ||
+                        gezin.postcode.toLowerCase().includes(searchTerm) ||
+                        gezin.email.toLowerCase().includes(searchTerm)
+                );
             }
-          });
+
+            // Sorteren
+            if (currentSort.key) {
+                filteredGezinnen.sort((a, b) => {
+                    let valA = a[currentSort.key];
+                    let valB = b[currentSort.key];
+                    if (currentSort.key === "aantal") {
+                        valA = (a.gezinsleden && a.gezinsleden.length) ? a.gezinsleden.length : 0;
+                        valB = (b.gezinsleden && b.gezinsleden.length) ? b.gezinsleden.length : 0;
+                    }
+                    if (typeof valA === "string") valA = valA.toLowerCase();
+                    if (typeof valB === "string") valB = valB.toLowerCase();
+                    if (valA < valB) return currentSort.asc ? -1 : 1;
+                    if (valA > valB) return currentSort.asc ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            // Clear table
+            tableBody.innerHTML = "";
+
+            // Add gezinnen to table
+            filteredGezinnen.forEach((gezin) => {
+                const isInactive = gezin.actief === 0 || gezin.actief === "0";
+
+                const row = document.createElement("tr");
+                row.className = isInactive ? "bg-red-100" : "";
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap hidden multi-select-col">
+                        <input type="checkbox" class="klant-checkbox focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" data-id="${gezin.id}">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-2">
+                        ${gezin.naam}
+                        ${isInactive ? '<span class="ml-2 px-2 py-1 text-xs rounded bg-red-400 text-white">Gedeactiveerd</span>' : ''}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${gezin.postcode}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${gezin.email}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${gezin.telefoonnummer}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${(gezin.gezinsleden && gezin.gezinsleden.length) ? gezin.gezinsleden.length : 0}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-2">
+                        <button class="edit-klant text-green-600 hover:text-green-900" data-id="${gezin.id}">Wijzig</button>
+                        ${isInactive
+                            ? `<button class="activate-klant text-blue-600 hover:text-blue-900" data-id="${gezin.id}">Activeer</button>`
+                            : `<button class="delete-klant text-red-600 hover:text-red-900" data-id="${gezin.id}">Verwijder</button>`
+                        }
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Add event listeners to edit buttons
+            const editButtons = document.querySelectorAll(".edit-klant");
+            editButtons.forEach((button) => {
+              button.addEventListener("click", () => {
+                const klantId = Number.parseInt(button.getAttribute("data-id"));
+                openKlantModal(klantId);
+              });
+            });
+
+            const deleteButtons = document.querySelectorAll(".delete-klant");
+            deleteButtons.forEach((button) => {
+              button.addEventListener("click", () => {
+                const klantId = Number.parseInt(button.getAttribute("data-id"));
+                if (confirm("Weet je zeker dat je dit gezin wilt verwijderen?")) {
+                  fetch("php/klanten-api.php?action=delete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: klantId }),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      if (data.success) {
+                        if (data.inactive) {
+                          alert("Deze klant heeft voedselpakketten en is nu inactief gemaakt.");
+                        }
+                        loadKlanten();
+                      } else {
+                        alert(data.error || JSON.stringify(data) || "Verwijderen mislukt");
+                      }
+                    })
+                    .catch(() => alert("Verwijderen mislukt"));
+                }
+              });
+            });
+
+            const activateButtons = document.querySelectorAll(".activate-klant");
+            activateButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    const klantId = Number.parseInt(button.getAttribute("data-id"));
+                    if (confirm("Weet je zeker dat je deze klant weer actief wilt maken?")) {
+                        fetch("php/klanten-api.php?action=activate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: klantId }),
+                        })
+                            .then((res) => res.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    loadKlanten();
+                                } else {
+                                    alert(data.error || JSON.stringify(data) || "Activeren mislukt");
+                                }
+                            })
+                            .catch(() => alert("Activeren mislukt"));
+                    }
+                });
+            });
         });
-      });
   }
 
 
@@ -276,6 +331,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value;
     const telefoon = document.getElementById("telefoon").value;
 
+    // Phone number length check
+    if (telefoon.length > 10) {
+        alert("Telefoonnummer mag maximaal 10 cijfers bevatten.");
+        return;
+    }
+
     // Get dieetwensen
     const dieetwensen = [];
     if (document.getElementById("geen-varkensvlees").checked) dieetwensen.push("geen-varkensvlees");
@@ -324,4 +385,35 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(() => alert("Opslaan mislukt"));
   }
+
+  const filterInput = document.getElementById('klanten-filter');
+  const tableBody = document.getElementById('klanten-table-body');
+
+  if (filterInput) {
+      filterInput.addEventListener('input', function () {
+          const filter = filterInput.value.toLowerCase();
+          Array.from(tableBody.children).forEach(row => {
+              const text = row.textContent.toLowerCase();
+              row.style.display = text.includes(filter) ? '' : 'none';
+          });
+      });
+  }
+
+  // Sorting event listeners
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.addEventListener('click', function () {
+        const key = th.getAttribute('data-sort');
+        if (currentSort.key === key) {
+            currentSort.asc = !currentSort.asc;
+        } else {
+            currentSort.key = key;
+            currentSort.asc = true;
+        }
+        loadKlanten();
+    });
+});
+
+  // Filter en inactief toggle event listeners
+  document.getElementById('klanten-filter').addEventListener('input', loadKlanten);
+  document.getElementById('show-inactive').addEventListener('change', loadKlanten);
 })

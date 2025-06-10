@@ -6,10 +6,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 if ($method === 'GET' && $action === 'list') {
-    // Get all pakketten
+    // Get all pakketten for active klanten only
     $sql = "SELECT v.id, v.datum, v.klanten_id, v.datum_uitgifte, k.naam as gezinNaam
             FROM voedselpakket v
-            LEFT JOIN klanten k ON v.klanten_id = k.id";
+            LEFT JOIN klanten k ON v.klanten_id = k.id
+            WHERE k.actief = 1";
     $result = $conn->query($sql);
     $pakketten = [];
     while ($row = $result->fetch_assoc()) {
@@ -37,8 +38,8 @@ if ($method === 'GET' && $action === 'items') {
 }
 
 if ($method === 'GET' && $action === 'gezinnen') {
-    // Get all families
-    $result = $conn->query("SELECT id, naam FROM klanten");
+    // Get all active families
+    $result = $conn->query("SELECT id, naam FROM klanten WHERE actief = 1");
     $gezinnen = [];
     while ($row = $result->fetch_assoc()) {
         $gezinnen[] = $row;
@@ -48,9 +49,24 @@ if ($method === 'GET' && $action === 'gezinnen') {
 }
 
 if ($method === 'GET' && $action === 'producten') {
-    // Search products by name or EAN
     $q = $conn->real_escape_string($_GET['q'] ?? '');
-    $result = $conn->query("SELECT id, naam, ean, categorie, op_voorraad AS voorraad FROM producten WHERE naam LIKE '%$q%' OR ean LIKE '%$q%' LIMIT 20");
+    $categorie = $conn->real_escape_string($_GET['categorie'] ?? '');
+    $voorraad = $_GET['voorraad'] ?? '';
+
+    $where = [];
+    if ($q !== '') {
+        $where[] = "(naam LIKE '%$q%' OR ean LIKE '%$q%')";
+    }
+    if ($categorie !== '') {
+        $where[] = "categorie = '$categorie'";
+    }
+    if ($voorraad === 'op_voorraad') {
+        $where[] = "op_voorraad > 0";
+    } elseif ($voorraad === 'niet_op_voorraad') {
+        $where[] = "op_voorraad <= 0";
+    }
+    $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    $result = $conn->query("SELECT id, naam, ean, categorie, op_voorraad AS voorraad FROM producten $whereSql LIMIT 50");
     $producten = [];
     while ($row = $result->fetch_assoc()) {
         $producten[] = $row;

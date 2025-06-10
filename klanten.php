@@ -21,6 +21,11 @@ include 'auth.php';
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Klanten</h2>
                 <div class="flex space-x-2">
+                <label class="flex items-center space-x-1">
+                        <input type="checkbox" id="show-inactive" class="h-4 w-4 text-green-600 border-gray-300 rounded">
+                        <span class="text-sm text-gray-700">Toon gedeactiveerden</span>
+                    </label>
+                    <input type="text" id="klanten-filter" placeholder="Zoek op naam, postcode, email..." class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
                     <button id="add-klant" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <i class="fas fa-plus mr-2"></i>Voeg toe
                     </button>
@@ -92,7 +97,7 @@ include 'auth.php';
                     </div>
                     <div>
                         <label for="telefoon" class="block text-sm font-medium text-gray-700">Telefoon nummer</label>
-                        <input type="tel" id="telefoon" name="telefoon" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <input type="tel" id="telefoon" name="telefoon" required maxlength="10" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                     </div>
                 </div>
                 

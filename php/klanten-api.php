@@ -17,8 +17,11 @@ $action = $_GET['action'] ?? $_POST['action'] ?? null;
 
 // GET: alle klanten ophalen
 if ($method === 'GET' && !$action) {
-    // Fetch all klanten
-    $sql = "SELECT id, naam, postcode, email, telefoonnummer FROM klanten";
+    $all = isset($_GET['all']) && $_GET['all'] == 1;
+    $sql = "SELECT id, naam, postcode, email, telefoonnummer, actief FROM klanten";
+    if (!$all) {
+        $sql .= " WHERE actief = 1";
+    }
     $result = $conn->query($sql);
 
     $klanten = [];
@@ -162,14 +165,32 @@ if (($method === 'POST' && $action === 'delete') || $method === 'DELETE') {
         exit;
     }
 
-    $conn->query("DELETE FROM gezinsleden WHERE klanten_id = $id");
-    $conn->query("DELETE FROM dieëtwensen WHERE klanten_id = $id");
+    // Set klant to inactive (actief = 0)
+    if ($conn->query("UPDATE klanten SET actief = 0 WHERE id = $id")) {
+        echo json_encode(['success' => true, 'inactive' => true]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => 'Inactief maken mislukt: ' . $conn->error]);
+    }
+    exit;
+}
 
-    if ($conn->query("DELETE FROM klanten WHERE id = $id")) {
+// ACTIVATE: klant weer actief maken
+if ($method === 'POST' && $action === 'activate') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = intval($data['id'] ?? 0);
+
+    if (!$id) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Geen geldig ID']);
+        exit;
+    }
+
+    if ($conn->query("UPDATE klanten SET actief = 1 WHERE id = $id")) {
         echo json_encode(['success' => true]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Verwijderen mislukt: ' . $conn->error]);
+        echo json_encode(['error' => 'Activeren mislukt: ' . $conn->error]);
     }
     exit;
 }

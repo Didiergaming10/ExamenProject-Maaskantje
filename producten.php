@@ -122,17 +122,7 @@ include 'auth.php';
                 <div>
                     <label for="product-categorie" class="block text-sm font-medium text-gray-700">Categorie</label>
                     <select id="product-categorie" name="product-categorie" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <option value="">Selecteer categorie</option>
-                        <option value="aardappelen">Aardappelen, groente en fruit</option>
-                        <option value="kaas">Kaas en vleeswaren</option>
-                        <option value="zuivel">Zuivel, plantaardig en eieren</option>
-                        <option value="bakkerij">Bakkerij en banket</option>
-                        <option value="frisdrank">Frisdrank, sappen, koffie en thee</option>
-                        <option value="pasta">Pasta, rijst en wereldkeuken</option>
-                        <option value="soepen">Soepen, sauzen, kruiden en olie</option>
-                        <option value="snoep">Snoep, koek, chips en chocolade</option>
-                        <option value="baby">Baby, verzorging en hygiëne</option>
-                    </select>
+
                 </div>
                 <div>
                     <label for="product-ean" class="block text-sm font-medium text-gray-700">EAN-nummer</label>
