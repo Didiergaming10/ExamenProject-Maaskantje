@@ -55,7 +55,7 @@ if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
         <!-- Search + User -->
         <div class="flex items-center space-x-4">
             
-            <!-- User Dropdown -->
+        <!-- User Dropdown -->
             <div class="relative" id="user-dropdown-parent">
                 <button id="user-dropdown-btn" type="button" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-green-50 transition focus:outline-none">
                     <i class="fas fa-user-circle text-green-600 text-xl"></i>
