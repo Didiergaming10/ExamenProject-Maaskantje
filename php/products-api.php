@@ -44,6 +44,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['addCategory'])) {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['editCategory'])) {
+    // Alleen directie mag dit
+    if ($role != 1) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Geen toestemming om te bewerken']);
+        exit;
+    }
+    $data = json_decode(file_get_contents('php://input'), true);
+    $oldNaam = $conn->real_escape_string(strtolower($data['oldNaam'] ?? ''));
+    $newNaam = $conn->real_escape_string(strtolower($data['newNaam'] ?? ''));
+    if (!$oldNaam || !$newNaam) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Ongeldige categorienaam']);
+        exit;
+    }
+    // Update categorie naam
+    $sql = "UPDATE categorieen SET naam='$newNaam' WHERE naam='$oldNaam'";
+    if ($conn->query($sql)) {
+        // Update ook producten die deze categorie hadden
+        $conn->query("UPDATE producten SET categorie='$newNaam' WHERE categorie='$oldNaam'");
+        echo json_encode(['success' => true]);
+    } else {
+        http_response_code(500);
+        echo json_encode(['error' => $conn->error]);
+    }
+    exit;
+}
+
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         // Get all products
