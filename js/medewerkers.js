@@ -1,4 +1,133 @@
 document.addEventListener("DOMContentLoaded", function() {
+    let medewerkers = [];
+    let currentSort = { key: null, asc: true };
+
+    const tableBody = document.getElementById("medewerkers-table-body");
+    const filterInput = document.getElementById("medewerkers-filter");
+    const showBlockedCheckbox = document.getElementById("show-blocked");
+
+    function loadMedewerkers() {
+        fetch("php/medewerkers-api.php")
+            .then(res => res.json())
+            .then(data => {
+                medewerkers = data;
+                renderTable();
+            });
+    }
+
+    function renderTable() {
+        let filtered = medewerkers;
+        const filter = (filterInput?.value || "").toLowerCase();
+        const showBlocked = showBlockedCheckbox?.checked;
+
+        // Filter op zoekterm
+        if (filter) {
+            filtered = filtered.filter(m =>
+                (m.naam || "").toLowerCase().includes(filter) ||
+                (m.email || "").toLowerCase().includes(filter) ||
+                (m.telefoon || "").toLowerCase().includes(filter) ||
+                (m.rol || "").toLowerCase().includes(filter) ||
+                (m.status || "").toLowerCase().includes(filter)
+            );
+        }
+
+        // Filter op status (actief/geblokkeerd)
+        if (!showBlocked) {
+            filtered = filtered.filter(m => (m.status || '').toLowerCase() !== 'geblokkeerd');
+        }
+
+        if (currentSort.key) {
+            filtered.sort((a, b) => {
+                let valA = a[currentSort.key] || "";
+                let valB = b[currentSort.key] || "";
+                valA = typeof valA === "string" ? valA.toLowerCase() : valA;
+                valB = typeof valB === "string" ? valB.toLowerCase() : valB;
+                if (valA < valB) return currentSort.asc ? -1 : 1;
+                if (valA > valB) return currentSort.asc ? 1 : -1;
+                return 0;
+            });
+        }
+
+        tableBody.innerHTML = "";
+        if (filtered.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">Geen medewerkers gevonden.</td></tr>`;
+            return;
+        }
+        filtered.forEach(row => {
+            const isBlocked = (row.status || '').toLowerCase() === 'geblokkeerd';
+            tableBody.innerHTML += `
+                <tr${isBlocked ? ' class="bg-red-100"' : ''}>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-2">
+                        ${row.naam}
+                        ${isBlocked ? '<span class="ml-2 px-2 py-1 text-xs rounded bg-red-400 text-white">Geblokkeerd</span>' : ''}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">${row.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${row.telefoon}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${row.rol}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${row.status}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button class="text-blue-600 hover:underline mr-4 edit-btn"
+                            data-id="${row.id}"
+                            data-voornaam="${row.voornaam || ''}"
+                            data-achternaam="${row.achternaam || ''}"
+                            data-email="${row.email || ''}"
+                            data-telefoon="${row.telefoon || ''}"
+                            data-rol="${row.rol || ''}"
+                            data-status="${row.status || ''}">Bewerk</button>
+                        <button class="text-red-600 hover:underline delete-btn"
+                            data-id="${row.id}"
+                            data-naam="${row.naam}">Verwijder</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Herkoppel events voor bewerk/verwijder
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                openMedewerkerModal('edit', btn.dataset);
+            });
+        });
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteId = btn.dataset.id;
+                deleteText.textContent = `Weet je zeker dat je ${btn.dataset.naam} wilt verwijderen?`;
+                deleteModal.classList.remove('hidden');
+                deleteModal.classList.add('flex');
+            });
+        });
+    }
+
+    // Filter
+    if (filterInput) {
+        filterInput.addEventListener('input', renderTable);
+    }
+    if (showBlockedCheckbox) {
+        showBlockedCheckbox.addEventListener('change', renderTable);
+    }
+
+    // Sorteren
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', function() {
+            const key = th.getAttribute('data-sort');
+            if (currentSort.key === key) {
+                currentSort.asc = !currentSort.asc;
+            } else {
+                currentSort.key = key;
+                currentSort.asc = true;
+            }
+            renderTable();
+        });
+    });
+
+    // Voeg toe knop
+    const addBtn = document.getElementById('add-medewerker');
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            openMedewerkerModal('create');
+        });
+    }
+
     // Modal elementen
     const medewerkerModal = document.getElementById('medewerker-modal');
     const medewerkerForm = document.getElementById('medewerker-form');
@@ -15,31 +144,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let deleteId = null;
     const deleteCancel = document.getElementById('delete-cancel');
     const deleteConfirm = document.getElementById('delete-confirm');
-
-    // Voeg toe knop
-    const addBtn = document.getElementById('add-medewerker');
-    if (addBtn) {
-        addBtn.addEventListener('click', function() {
-            openMedewerkerModal('create');
-        });
-    }
-
-    // Bewerk knoppen
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            openMedewerkerModal('edit', btn.dataset);
-        });
-    });
-
-    // Verwijder knoppen
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            deleteId = btn.dataset.id;
-            deleteText.textContent = `Weet je zeker dat je ${btn.dataset.naam} wilt verwijderen?`;
-            deleteModal.classList.remove('hidden');
-            deleteModal.classList.add('flex');
-        });
-    });
 
     // Modal sluiten
     function closeMedewerkerModal() {
@@ -139,4 +243,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         };
     }
+
+    loadMedewerkers();
 });

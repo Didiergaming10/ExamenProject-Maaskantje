@@ -132,23 +132,6 @@ include 'auth.php';
                     <label for="product-voorraad" class="block text-sm font-medium text-gray-700">Voorraad</label>
                     <input type="number" id="product-voorraad" name="product-voorraad" min="0" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                 </div>
-                <!-- <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Dieetwensen:</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="product-geen-varkensvlees" name="product-dieetwensen" value="geen-varkensvlees" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            <label for="product-geen-varkensvlees" class="ml-2 block text-sm text-gray-700">geen varkensvlees</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="product-veganistisch" name="product-dieetwensen" value="veganistisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            <label for="product-veganistisch" class="ml-2 block text-sm text-gray-700">veganistisch</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="product-vegetarisch" name="product-dieetwensen" value="vegetarisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            <label for="product-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
-                        </div>
-                    </div>
-                </div> -->
                 <div class="flex justify-end space-x-2">
                     <button type="button" id="cancel-product" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Annuleren
