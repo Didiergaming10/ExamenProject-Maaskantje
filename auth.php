@@ -5,6 +5,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 
+
+// echo '<pre>';
+// print_r($_SESSION);
+// echo '</pre>';
+// exit();
+
+
 /* ------------------------------------------------------------------
    BASIC AUTHENTICATION
    ------------------------------------------------------------------ */
@@ -21,11 +28,11 @@ if (
    ------------------------------------------------------------------ */
 // ROLE-BASED ACCESS CONTROL
 if (isset($required_roles)) {
-    if (!in_array($_SESSION['role'], $required_roles, true)) {
+    if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], $required_roles, true)) {
         redirectToRoleHome();
     }
 } elseif (isset($required_role)) {
-    if ($_SESSION['role'] !== $required_role) {
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== $required_role) {
         redirectToRoleHome();
     }
 }

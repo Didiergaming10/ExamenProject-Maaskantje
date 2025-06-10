@@ -5,32 +5,31 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Only display header if user is logged in
 if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
-    $role = isset($_SESSION['role']) ? (int)$_SESSION['role'] : null;
+    $role = $_SESSION['role'] ?? null;
     $username = $_SESSION['username'] ?? 'Gebruiker';
 
     $roleMenus = [
-        1 => 'Admin',
-        2 => 'Magazijnmedewerker',
-        3 => 'Vrijwilliger'
+        'directie' => 'Admin',
+        'magazijnmedewerker' => 'Magazijnmedewerker',
+        'vrijwilliger' => 'Vrijwilliger'
     ];
 
     $menuItems = [
-        1 => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten', 'index-vrijwilliger'],
-        2 => ['leveranciers', 'producten'],
-        3 => ['voedselpakketten', 'index-vrijwilliger']
+        'directie' => ['klanten', 'medewerkers', 'leveranciers', 'producten', 'voedselpakketten', 'index-vrijwilliger'],
+        'magazijnmedewerker' => ['leveranciers', 'producten'],
+        'vrijwilliger' => ['voedselpakketten', 'index-vrijwilliger']
     ];
 
     $menuDisplayNames = [
         'index-vrijwilliger' => 'Voedselpakket maken',
-        ];
+    ];
 
     $currentMenu = $menuItems[$role] ?? [];
 
-    // Add this before the HTML:
     $homeLinks = [
-        1 => '/directie-home.php',
-        2 => '/producten.php',
-        3 => '/index-vrijwilliger.php'
+        'directie' => '/directie-home.php',
+        'magazijnmedewerker' => '/producten.php',
+        'vrijwilliger' => '/index-vrijwilliger.php'
     ];
     $homeLink = $homeLinks[$role] ?? '#';
 ?>

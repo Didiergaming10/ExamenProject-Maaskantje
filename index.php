@@ -7,13 +7,13 @@ $msg = '';
 // Check of gebruiker al ingelogd is
 if (isset($_SESSION['valid']) && $_SESSION['valid'] === true) {
     switch ($_SESSION['role']) {
-        case 1:
+        case 'directie':
             header('Location: directie-home.php');
             exit;
-        case 2:
+        case 'magazijnmedewerker':
             header('Location: producten.php');
             exit;
-        case 3:
+        case 'vrijwilliger':
             header('Location: voedselpakketten.php');
             exit;
         default:
@@ -38,32 +38,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fullName = $user['voornaam'] . ' ' . $user['achternaam'];
 
             if ($user['status'] === 'geblokkeerd') {
-    $msg = "Je account is geblokkeerd. Neem contact op met de beheerder.";
-} elseif (password_verify($password, $user['wachtwoord'])) {
-    // Login succesvol, sessie variabelen zetten
-    $_SESSION['valid'] = true;
-    $_SESSION['timeout'] = time();
-    $_SESSION['username'] = $user['voornaam'] . ' ' . $user['achternaam'];
-    $_SESSION['user_id'] = $user['id'];
-    $_SESSION['role'] = $user['rollen_idrollen'];
+                $msg = "Je account is geblokkeerd. Neem contact op met de beheerder.";
+            } elseif (password_verify($password, $user['wachtwoord'])) {
+                // Login succesvol, sessie variabelen zetten
+                $_SESSION['valid'] = true;
+                $_SESSION['timeout'] = time();
+                $_SESSION['username'] = $user['voornaam'] . ' ' . $user['achternaam'];
+                $_SESSION['user_id'] = $user['id'];
 
-    // Redirect op basis van rol
-    switch ($user['rollen_idrollen']) {
-        case 1:
-            header('Location: directie-home.php');
-            exit;
-        case 2:
-            header('Location: producten.php');
-            exit;
-        case 3:
-            header('Location: voedselpakketten.php');
-            exit;
-        default:
-            $msg = "Onbekende rol. Neem contact op met de beheerder.";
-    }
-} else {
-    $msg = "Ongeldig wachtwoord.";
-}
+                // Map rol-ID naar string
+                switch ($user['rollen_idrollen']) {
+                    case 1:
+                        $_SESSION['role'] = 'directie';
+                        header('Location: directie-home.php');
+                        exit;
+                    case 2:
+                        $_SESSION['role'] = 'magazijnmedewerker';
+                        header('Location: producten.php');
+                        exit;
+                    case 3:
+                        $_SESSION['role'] = 'vrijwilliger';
+                        header('Location: voedselpakketten.php');
+                        exit;
+                    default:
+                        $msg = "Onbekende rol. Neem contact op met de beheerder.";
+                }
+            } else {
+                $msg = "Ongeldig wachtwoord.";
+            }
 
         } else {
             $msg = "Gebruiker niet gevonden.";
