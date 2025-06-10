@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'php/connection.php';
+$required_roles = ['directie'];
 include 'auth.php';
 ?>
 
