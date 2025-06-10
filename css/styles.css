@@ -143,3 +143,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+/* .text{
+font-size: var(--text-base); 
+line-height: var(--text-base--line-height); 
+} */
