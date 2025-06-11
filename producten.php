@@ -27,7 +27,7 @@ include 'auth.php';
                 <ul class="space-y-2" id="categories-list">
                     <!-- Dynamisch geladen -->
                 </ul>
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'directie'): ?>
     <button id="add-category-btn" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
         <i class="fas fa-plus mr-2"></i>Nieuwe categorie
     </button>
@@ -51,24 +51,17 @@ include 'auth.php';
                         </div>
                     </div>
                     
-                    <div id="product-actions" class="flex flex-wrap gap-2 mb-4">
-                        <button id="add-product" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <i class="fas fa-plus mr-2"></i>Product toevoegen
-                        </button>
-                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
-    <button id="remove-product" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-        <i class="fas fa-trash mr-2"></i>Verwijderen
-    </button>
-    <?php endif; ?>
-</div>
                     
-                    <div class="mb-4 flex items-center">
+                    <div class="mb-4 flex flex-col md:flex-row items-center gap-2">
     <input
         type="text"
         id="search-products"
         placeholder="Zoek op naam, categorie, EAN of voorraad..."
         class="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
     />
+    <button id="add-product" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 md:ml-2 w-full md:w-auto">
+        <i class="fas fa-plus mr-2"></i>Product toevoegen
+    </button>
 </div>
                     
                     <div class="overflow-x-auto">

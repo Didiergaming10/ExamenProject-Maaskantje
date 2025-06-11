@@ -1,4 +1,5 @@
 <?php
+session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -6,7 +7,7 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 $conn = include __DIR__ . '/connection.php';
 
-session_start();
+
 $role = $_SESSION['role'] ?? null;
 
 if ($conn->connect_error) {
@@ -46,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['addCategory'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['editCategory'])) {
     // Alleen directie mag dit
-    if ($role != 1) {
+    if ($role !== 'directie') {
         http_response_code(403);
         echo json_encode(['error' => 'Geen toestemming om te bewerken']);
         exit;
@@ -74,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['editCategory'])) {
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
-        // Get all products
-        $sql = "SELECT id, naam, categorie, ean, op_voorraad AS voorraad FROM producten";
+        // Get all active products
+        $sql = "SELECT id, naam, categorie, ean, op_voorraad AS voorraad FROM producten WHERE actief = 1";
         $result = $conn->query($sql);
         $products = [];
         while ($row = $result->fetch_assoc()) {
@@ -89,8 +90,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         // Handle delete action
         if (isset($_GET['action']) && $_GET['action'] === 'delete') {
-            // Only allow directie (role 1)
-            if ($role != 1) {
+            if ($role !== 'directie') {
                 http_response_code(403);
                 echo json_encode(['error' => 'Geen toestemming om te verwijderen']);
                 exit;
@@ -102,7 +102,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
             $ids = array_map('intval', $data['ids']);
             $idList = implode(',', $ids);
-            $sql = "DELETE FROM producten WHERE id IN ($idList)";
+            // Soft delete: zet actief op 0
+            $sql = "UPDATE producten SET actief = 0 WHERE id IN ($idList)";
             if ($conn->query($sql)) {
                 echo json_encode(['success' => true]);
             } else {

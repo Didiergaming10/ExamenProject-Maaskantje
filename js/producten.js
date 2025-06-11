@@ -75,7 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="px-6 py-4">${p.voorraad}</td>
         <td class="px-6 py-4">
           ${user.role === "directie"
-            ? `<button class="text-blue-600 hover:underline edit-product" data-id="${p.id}">Bewerken</button>`
+            ? `
+              <button class="text-blue-600 hover:underline edit-product mr-2" data-id="${p.id}">Bewerken</button>
+              <button class="text-red-600 hover:underline delete-product" data-id="${p.id}">Verwijderen</button>
+            `
             : `<span class="text-gray-400 italic">Geen toegang</span>`
           }
         </td>
@@ -85,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     addEditListeners(products);
+    addDeleteListeners();
   }
 
   function addEditListeners(products) {
@@ -102,6 +106,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("modal-title").textContent = "Product bewerken";
         document.getElementById("product-modal").classList.remove("hidden");
+      });
+    });
+  }
+
+  function addDeleteListeners() {
+    document.querySelectorAll(".delete-product").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        if (!confirm("Weet je zeker dat je dit product wilt verwijderen?")) return;
+        fetch("php/products-api.php?action=delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: [id] })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              loadProducts();
+            } else {
+              alert("Fout bij verwijderen: " + (data.error || "Onbekende fout"));
+            }
+          });
       });
     });
   }
