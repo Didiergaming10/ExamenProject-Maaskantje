@@ -123,33 +123,18 @@ include 'auth.php';
                 <div>
                     <label for="product-categorie" class="block text-sm font-medium text-gray-700">Categorie</label>
                     <select id="product-categorie" name="product-categorie" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-
+ 
+                    </select>
                 </div>
                 <div>
                     <label for="product-ean" class="block text-sm font-medium text-gray-700">EAN-nummer</label>
-                    <input type="text" id="product-ean" name="product-ean" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    <input type="text" id="product-ean" name="product-ean" maxlength="13" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                 </div>
                 <div>
                     <label for="product-voorraad" class="block text-sm font-medium text-gray-700">Voorraad</label>
                     <input type="number" id="product-voorraad" name="product-voorraad" min="0" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                 </div>
-                <!-- <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Dieetwensen:</label>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="product-geen-varkensvlees" name="product-dieetwensen" value="geen-varkensvlees" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            <label for="product-geen-varkensvlees" class="ml-2 block text-sm text-gray-700">geen varkensvlees</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="product-veganistisch" name="product-dieetwensen" value="veganistisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            <label for="product-veganistisch" class="ml-2 block text-sm text-gray-700">veganistisch</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="product-vegetarisch" name="product-dieetwensen" value="vegetarisch" class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
-                            <label for="product-vegetarisch" class="ml-2 block text-sm text-gray-700">vegetarisch</label>
-                        </div>
-                    </div>
-                </div> -->
+
                 <div class="flex justify-end space-x-2">
                     <button type="button" id="cancel-product" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Annuleren
@@ -186,6 +171,33 @@ include 'auth.php';
             </div>
         </form>
     </div>
+</div>
+
+    <!-- Categorie bewerken Modal -->
+    <div id="edit-category-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Categorie bewerken</h2>
+      <button id="close-edit-category-modal" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <form id="edit-category-form" class="space-y-4">
+      <input type="hidden" id="edit-category-old-naam">
+      <div>
+        <label for="edit-category-naam" class="block text-sm font-medium text-gray-700">Nieuwe categorienaam</label>
+        <input type="text" id="edit-category-naam" name="edit-category-naam" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" id="cancel-edit-category" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Annuleren
+        </button>
+        <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Opslaan
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
   <script src="js/auth.js"></script>

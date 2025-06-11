@@ -119,7 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         categories.forEach(cat => {
           const li = document.createElement("li");
-          li.innerHTML = `<a href="#" class="block p-2 hover:bg-gray-100 rounded${selected === cat ? " bg-green-100 text-green-800" : ""}" data-category="${cat}">${cat}</a>`;
+          li.innerHTML = `
+            <div class="flex items-center justify-between">
+              <a href="#" class="block p-2 hover:bg-gray-100 rounded${selected === cat ? " bg-green-100 text-green-800" : ""}" data-category="${cat}">${cat}</a>
+              ${user.role === "directie" ? `<button class="edit-category-btn text-blue-600 ml-2" data-category="${cat}" title="Bewerken"><i class="fas fa-edit"></i></button>` : ""}
+            </div>
+          `;
           list.appendChild(li);
         });
 
@@ -270,6 +275,50 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("cancel-category")?.addEventListener("click", () => {
     document.getElementById("category-modal").classList.add("hidden");
+  });
+
+  // Event delegation for edit category buttons
+  document.getElementById("categories-list").addEventListener("click", function(e) {
+    if (e.target.closest(".edit-category-btn")) {
+      const btn = e.target.closest(".edit-category-btn");
+      const cat = btn.dataset.category;
+      document.getElementById("edit-category-old-naam").value = cat;
+      document.getElementById("edit-category-naam").value = cat;
+      document.getElementById("edit-category-modal").classList.remove("hidden");
+    }
+  });
+
+  // Close/cancel edit modal
+  document.getElementById("close-edit-category-modal")?.addEventListener("click", () => {
+    document.getElementById("edit-category-modal").classList.add("hidden");
+  });
+  document.getElementById("cancel-edit-category")?.addEventListener("click", () => {
+    document.getElementById("edit-category-modal").classList.add("hidden");
+  });
+
+  // Submit edit category form
+  document.getElementById("edit-category-form")?.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const oldNaam = document.getElementById("edit-category-old-naam").value.trim();
+    const newNaam = document.getElementById("edit-category-naam").value.trim();
+    if (!oldNaam || !newNaam) return;
+
+    fetch("php/products-api.php?editCategory", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ oldNaam, newNaam })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("edit-category-modal").classList.add("hidden");
+          loadCategories(newNaam);
+          updateCategorySelect();
+          loadProducts();
+        } else {
+          alert("Fout bij bewerken: " + (data.error || "Onbekende fout"));
+        }
+      });
   });
 
   loadProducts();

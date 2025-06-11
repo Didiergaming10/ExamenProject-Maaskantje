@@ -21,78 +21,36 @@ include 'auth.php';
     <div class="bg-white p-4 rounded-lg shadow mb-6">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold">Medewerkers</h2>
-            <button id="add-medewerker" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Voeg toe</button>
+            <div class="flex gap-2">
+                <label class="flex items-center space-x-1">
+                    <input type="checkbox" id="show-blocked" class="h-4 w-4 text-green-600 border-gray-300 rounded">
+                    <span class="text-sm text-gray-700">Toon geblokkeerde</span>
+                </label>
+                <input type="text" id="medewerkers-filter" placeholder="Zoek op naam, email, telefoon..." class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" />
+                <button id="add-medewerker" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Voeg toe</button>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Naam</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefoon</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" data-sort="naam">Naam</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" data-sort="email">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" data-sort="telefoon">Telefoon</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" data-sort="rol">Rol</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" data-sort="status">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acties</th>
                 </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                <?php
-                $result = $conn->query("
-                    SELECT 
-                        g.id, g.voornaam, g.achternaam, g.email, g.telefoon, g.status,
-                        r.directie, r.magazijnmedewerker, r.vrijwilliger
-                    FROM gebruikers g
-                    LEFT JOIN rollen r ON g.rollen_idrollen = r.idrollen
-                ");
-
-
-
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        // Rol bepalen
-                        $rol = 'onbekend';
-                        if ($row['directie'] == 1) {
-                            $rol = 'admin';
-                        } elseif ($row['magazijnmedewerker'] == 1) {
-                            $rol = 'magazijn';
-                        } elseif ($row['vrijwilliger'] == 1) {
-                            $rol = 'vrijwilliger';
-                        }
-
-                        echo "<tr>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap'>" . htmlspecialchars(($row['voornaam'] ?? '') . ' ' . ($row['achternaam'] ?? '')) . "</td>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap'>" . htmlspecialchars($row['email'] ?? '') . "</td>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap'>" . htmlspecialchars($row['telefoon'] ?? '') . "</td>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap'>" . htmlspecialchars($rol) . "</td>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap'>" . htmlspecialchars($row['status'] ?? '-') . "</td>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap'>
-                                <button class=\"text-blue-600 hover:underline mr-4 edit-btn\" 
-                                    data-id=\"" . (int)$row['id'] . "\" 
-                                    data-voornaam=\"" . htmlspecialchars($row['voornaam'] ?? '') . "\" 
-                                    data-achternaam=\"" . htmlspecialchars($row['achternaam'] ?? '') . "\" 
-                                    data-email=\"" . htmlspecialchars($row['email'] ?? '') . "\" 
-                                    data-telefoon=\"" . htmlspecialchars($row['telefoon'] ?? '') . "\" 
-                                    data-rol=\"" . htmlspecialchars($rol) . "\" 
-                                    data-status=\"" . htmlspecialchars($row['status'] ?? '') . "\">Bewerk</button>
-                                <button class=\"text-red-600 hover:underline delete-btn\" 
-                                    data-id=\"" . (int)$row['id'] . "\" 
-                                    data-naam=\"" . htmlspecialchars(($row['voornaam'] ?? '') . ' ' . ($row['achternaam'] ?? '')) . "\">Verwijder</button>
-                              </td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='6' class='text-center py-4 text-gray-500'>Geen medewerkers gevonden.</td></tr>";
-                }
-
-                $conn->close();
-                ?>
+                <tbody id="medewerkers-table-body" class="bg-white divide-y divide-gray-200">
+                <!-- Medewerkers worden hier geladen via JS -->
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Medewerker Modal (voor create & edit) -->
+    <!-- Medewerker Modal -->
     <div id="medewerker-modal" class="fixed inset-0 bg-gray-800 bg-opacity-70 hidden items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
             <div class="flex justify-between items-center mb-4">
