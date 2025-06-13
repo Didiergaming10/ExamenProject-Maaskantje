@@ -131,5 +131,16 @@ if ($method === 'POST' && $action === 'opgehaald') {
     exit;
 }
 
+if ($method === 'GET' && $action === 'gezinsleden') {
+    $gezin_id = intval($_GET['gezin_id'] ?? 0);
+    $result = $conn->query("SELECT geboortedatum FROM gezinsleden WHERE klanten_id = $gezin_id");
+    $gezinsleden = [];
+    while ($row = $result->fetch_assoc()) {
+        $gezinsleden[] = $row['geboortedatum'];
+    }
+    echo json_encode(['gezinsleden' => $gezinsleden]);
+    exit;
+}
+
 echo json_encode(['error' => 'Ongeldige actie']);
 ?>

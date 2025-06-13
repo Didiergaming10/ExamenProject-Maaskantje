@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           dieetLabel.textContent = "Geen dieetwensen";
         }
+        // Laad leeftijdscategorieën
+        laadLeeftijdscategorieenVoorGezin(gezinIdParam);
       });
   } else {
     // Load dropdown
@@ -49,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!id) {
         gezinNaamLabel.textContent = "";
         document.getElementById("gezin-dieetwensen").textContent = "";
+        document.getElementById("gezin-leeftijdscategorieen").innerHTML = "";
         return;
       }
 
@@ -63,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             dieetLabel.textContent = "Geen dieetwensen";
           }
+          // Laad leeftijdscategorieën
+          laadLeeftijdscategorieenVoorGezin(id);
         });
     });
   }
@@ -244,4 +249,58 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
   });
+
+  // Helper: leeftijd berekenen op basis van geboortedatum (YYYY-MM-DD)
+  function berekenLeeftijd(geboortedatum) {
+    if (!geboortedatum) return null;
+    const parts = geboortedatum.split("-");
+    if (parts.length !== 3) return null;
+    const geboortedatumObj = new Date(parts[0], parts[1] - 1, parts[2]);
+    const nu = new Date();
+    let leeftijd = nu.getFullYear() - geboortedatumObj.getFullYear();
+    const m = nu.getMonth() - geboortedatumObj.getMonth();
+    if (m < 0 || (m === 0 && nu.getDate() < geboortedatumObj.getDate())) {
+      leeftijd--;
+    }
+    return leeftijd;
+  }
+
+  // Helper: tel leden per leeftijdscategorie
+  function telLeeftijdscategorieen(gezinsleden) {
+    const categorieen = {
+      "babys": 0,      // <=2 jaar
+      "kinderen": 0,   // >2 en <=18 jaar
+      "volwassenen": 0 // >18 jaar
+    };
+    gezinsleden.forEach(geboortedatum => {
+      const leeftijd = berekenLeeftijd(geboortedatum);
+      if (leeftijd === null) return;
+      if (leeftijd <= 2) categorieen.babys++;
+      else if (leeftijd <= 18) categorieen.kinderen++;
+      else categorieen.volwassenen++;
+    });
+    return categorieen;
+  }
+
+  // Toon leeftijdscategorieën in gezin-info
+  function toonLeeftijdscategorieen(gezinsleden) {
+    const cat = telLeeftijdscategorieen(gezinsleden);
+    const container = document.getElementById("gezin-leeftijdscategorieen");
+    container.innerHTML = `
+      <div class="text-xs text-gray-500">
+        <div>Baby's: ${cat.babys}</div>
+        <div>Kinderen: ${cat.kinderen}</div>
+        <div>Volwassenen: ${cat.volwassenen}</div>
+      </div>
+    `;
+  }
+
+  // Voeg deze functie toe na het tonen van dieetwensen
+  function laadLeeftijdscategorieenVoorGezin(gezinId) {
+    fetch("php/voedselpakketten-api.php?action=gezinsleden&gezin_id=" + gezinId)
+      .then(res => res.json())
+      .then(data => {
+        toonLeeftijdscategorieen(data.gezinsleden || []);
+      });
+  }
 });

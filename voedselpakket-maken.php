@@ -27,6 +27,7 @@ include 'auth.php';
 </div>
                     <div id="gezin-info" class="mt-2">
                         <div class="text-xs text-gray-500" id="gezin-dieetwensen"></div>
+                        <div id="gezin-leeftijdscategorieen" class="mt-1"></div>
                     </div>
                 </div>
                 <form id="pakket-form" class="bg-white p-4 rounded shadow flex-1 flex flex-col">
